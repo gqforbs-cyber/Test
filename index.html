@@ -2,342 +2,361 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
   <title>Cooler Tap</title>
+
   <style>
     :root{
-      --bg1:#0a1633;
-      --bg2:#120a2a;
-      --glass: rgba(255,255,255,.08);
-      --glass2: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.55);
-      --accent: #76ffb5;
-    }
-    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-    html,body{ height:100%; margin:0; }
-    body{
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 30% 10%, #1b3b78 0%, var(--bg1) 40%, var(--bg2) 100%);
-      color: var(--text);
-      overflow:hidden;
+      --bg1:#0b1d44;
+      --bg2:#140b3a;
+      --card:#27437a66;
+      --card2:#0a0f1f55;
+      --stroke:#ffffff22;
+      --text:#e9f1ff;
+      --muted:#b8c7ea99;
+      --mint:#7dffb5;
+      --btn:#0f1a2a88;
+      --btnStroke:#7dffb533;
     }
 
-    /* Важно для Telegram iOS: иногда прячет контент пока не перерисуется */
-    .app{
-      height: 100svh;
-      padding: 20px 16px calc(18px + env(safe-area-inset-bottom));
+    /* ✅ 2) убираем выделение/копирование, callout, “лупу” */
+    html, body, *{
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    html, body{
+      height:100%;
+      margin:0;
+      background: radial-gradient(1200px 900px at 50% 15%, #1c3f87 0%, var(--bg1) 35%, var(--bg2) 100%);
+      color:var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+      overflow:hidden; /* чтобы страница не “прыгала” */
+      touch-action: manipulation; /* ✅ 3) меньше шансов на зум */
+    }
+
+    .wrap{
+      height:100%;
       display:flex;
-      justify-content:center;
       align-items:center;
+      justify-content:center;
+      padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom) 14px;
+      box-sizing:border-box;
     }
 
-    .card{
+    .panel{
       width:min(420px, 92vw);
-      height:min(780px, 92svh);
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      border: 1px solid var(--stroke);
-      box-shadow: 0 22px 60px rgba(0,0,0,.45);
-      position: relative;
+      height:min(860px, 92vh);
+      border-radius:34px;
+      background: linear-gradient(180deg, #3b6bb344 0%, #1a2a5a55 40%, #1a0e3a66 100%);
+      border:1px solid var(--stroke);
+      box-shadow: 0 30px 80px #00000066;
+      position:relative;
+      padding:18px 18px 20px;
+      box-sizing:border-box;
       overflow:hidden;
-      padding: 18px 18px 16px;
     }
 
-    .toprow{
+    .topRow{
       display:flex;
       justify-content:space-between;
       gap:12px;
-      align-items:center;
-      margin-bottom: 14px;
+      margin-bottom:14px;
     }
+
     .pill{
       padding:10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.78);
-      font-weight: 600;
-      letter-spacing:.2px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: #ffffff10;
+      font-weight:600;
+      letter-spacing:.3px;
+      color:#d8e6ff;
     }
 
-    .fanWrap{
-      margin-top: 10px;
+    .fanZone{
+      margin-top:10px;
       display:flex;
-      justify-content:center;
       align-items:center;
-      width: 100%;
-      height: 360px;
-      position: relative;
-      user-select:none;
-      touch-action: manipulation;
+      justify-content:center;
     }
 
-    /* Круг клика/тапа */
-    .tapZone{
-      width: 310px;
-      height: 310px;
-      border-radius: 50%;
+    .fanOuter{
+      width:min(320px, 68vw);
+      aspect-ratio:1/1;
+      border-radius:50%;
+      border:1px solid #ffffff22;
+      background: radial-gradient(circle at 50% 45%, #ffffff12 0%, #ffffff05 45%, transparent 70%);
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .fanRing{
       position:absolute;
-      inset: 0;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      inset:10%;
+      border-radius:50%;
+      border:1px solid #ffffff18;
+      background: radial-gradient(circle at 50% 50%, #ffffff12 0%, #ffffff07 55%, transparent 72%);
     }
 
-    /* Вентилятор (рисуем CSS-ом, без картинок) */
     .fan{
-      width: 310px;
-      height: 310px;
-      border-radius: 50%;
-      position: relative;
-      background:
-        radial-gradient(circle at 50% 50%,
-          rgba(0,0,0,.0) 0%,
-          rgba(0,0,0,.0) 34%,
-          rgba(255,255,255,.05) 35%,
-          rgba(255,255,255,.03) 68%,
-          rgba(255,255,255,.08) 100%);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
-      transform: rotate(0deg);
-      will-change: transform;
+      width:72%;
+      aspect-ratio:1/1;
+      border-radius:50%;
+      position:relative;
+      transform: translateZ(0);
+      /* скорость управляется JS через CSS переменную */
+      animation: spin var(--spinDur, 10s) linear infinite;
+      filter: drop-shadow(0 10px 18px #00000040);
     }
-    .hub{
-      width: 92px;
-      height: 92px;
-      border-radius: 50%;
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%,-50%);
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), rgba(255,255,255,.06) 60%, rgba(0,0,0,.25) 100%);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 26px rgba(0,0,0,.35), inset 0 0 22px rgba(0,0,0,.25);
-      z-index: 3;
-    }
-    .blades{
-      position:absolute;
-      inset: 22px;
-      border-radius: 50%;
-      z-index:2;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
-    }
+
+    /* лопасти */
     .blade{
       position:absolute;
       left:50%;
       top:50%;
-      width: 120px;
-      height: 54px;
+      width:38%;
+      height:18%;
       transform-origin: 0% 50%;
-      border-radius: 30px;
-      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: inset 0 0 18px rgba(0,0,0,.18);
+      border-radius:999px;
+      background: linear-gradient(90deg, #ffffff1f 0%, #ffffff0b 70%, transparent 100%);
+      border:1px solid #ffffff14;
+      opacity:.85;
     }
-    /* 8 лопастей */
-    .blade:nth-child(1){ transform: translate(0,-50%) rotate(0deg); }
-    .blade:nth-child(2){ transform: translate(0,-50%) rotate(45deg); }
-    .blade:nth-child(3){ transform: translate(0,-50%) rotate(90deg); }
-    .blade:nth-child(4){ transform: translate(0,-50%) rotate(135deg); }
-    .blade:nth-child(5){ transform: translate(0,-50%) rotate(180deg); }
-    .blade:nth-child(6){ transform: translate(0,-50%) rotate(225deg); }
-    .blade:nth-child(7){ transform: translate(0,-50%) rotate(270deg); }
-    .blade:nth-child(8){ transform: translate(0,-50%) rotate(315deg); }
+    .blade:nth-child(1){ transform: translate(-2%, -50%) rotate(0deg); }
+    .blade:nth-child(2){ transform: translate(-2%, -50%) rotate(60deg); }
+    .blade:nth-child(3){ transform: translate(-2%, -50%) rotate(120deg); }
+    .blade:nth-child(4){ transform: translate(-2%, -50%) rotate(180deg); }
+    .blade:nth-child(5){ transform: translate(-2%, -50%) rotate(240deg); }
+    .blade:nth-child(6){ transform: translate(-2%, -50%) rotate(300deg); }
 
-    .bottom{
+    .hub{
       position:absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 16px;
-      padding: 18px 16px 16px;
-      border-radius: 26px;
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      left:50%;
+      top:50%;
+      width:28%;
+      height:28%;
+      transform: translate(-50%, -50%);
+      border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff2a 0%, #ffffff10 55%, #00000022 100%);
+      border:1px solid #ffffff20;
+    }
+    .hub2{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:14%;
+      height:14%;
+      transform: translate(-50%, -50%);
+      border-radius:50%;
+      background: radial-gradient(circle at 40% 40%, #ffffff30 0%, #ffffff10 55%, #00000022 100%);
+      border:1px solid #ffffff1f;
+    }
+
+    @keyframes spin{
+      to{ transform: rotate(360deg); }
+    }
+
+    .bottomCard{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:20px;
+      border-radius:26px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, #0b1327aa 0%, #120b33bb 100%);
+      padding:18px 18px 16px;
+      box-shadow: inset 0 0 0 1px #00000022;
     }
 
     .score{
-      font-size: 86px;
+      font-size:84px;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:6px;
       text-align:center;
-      font-weight: 900;
-      letter-spacing: 10px;
-      color: var(--accent);
-      text-shadow: 0 0 18px rgba(118,255,181,.28);
-      margin: 6px 0 6px;
+      color:var(--mint);
+      text-shadow: 0 0 18px #7dffb540;
+      margin:4px 0 10px;
     }
+
     .hint{
       text-align:center;
-      color: var(--muted);
-      font-size: 18px;
-      margin-bottom: 14px;
+      color:var(--muted);
+      font-size:18px;
+      margin-bottom:14px;
     }
 
     .btn{
-      width: 100%;
-      padding: 18px 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(118,255,181,.35);
-      background: rgba(118,255,181,.08);
-      color: rgba(255,255,255,.92);
-      font-weight: 800;
-      font-size: 22px;
+      width:100%;
+      border-radius:18px;
+      padding:16px 16px;
+      background: var(--btn);
+      border:1px solid var(--btnStroke);
+      color:#eaf4ff;
+      font-size:26px;
+      font-weight:800;
+      letter-spacing:.3px;
       cursor:pointer;
-      user-select:none;
-      touch-action: manipulation;
-    }
-    .btn:active{
-      transform: translateY(1px);
-      background: rgba(118,255,181,.12);
+      display:block;
     }
 
-    .note{
+    .btn:active{
+      transform: translateY(1px);
+      filter: brightness(1.05);
+    }
+
+    /* ✅ кликаем по зоне вентилятора без “скролла” */
+    .tapLayer{
       position:absolute;
-      left: 18px;
-      right: 18px;
-      top: 92px;
-      color: rgba(255,255,255,.25);
-      font-weight: 700;
-      text-align:center;
-      pointer-events:none;
-      font-size: 14px;
+      inset:0;
+      border-radius:50%;
+      z-index:5;
+    }
+
+    /* чтобы ничего “случайно” не выделялось */
+    .noSelect{
+      -webkit-user-select:none;
+      user-select:none;
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="card">
-      <div class="toprow">
+  <div class="wrap noSelect">
+    <div class="panel noSelect" id="panel">
+      <div class="topRow">
         <div class="pill">Cooler Tap</div>
         <div class="pill">v0.1</div>
       </div>
 
-      <div class="fanWrap">
-        <div class="tapZone" id="tapZone" aria-label="tap zone">
+      <div class="fanZone">
+        <div class="fanOuter" id="fanOuter">
+          <div class="fanRing"></div>
+
           <div class="fan" id="fan">
-            <div class="blades">
-              <div class="blade"></div><div class="blade"></div><div class="blade"></div><div class="blade"></div>
-              <div class="blade"></div><div class="blade"></div><div class="blade"></div><div class="blade"></div>
-            </div>
+            <div class="blade"></div>
+            <div class="blade"></div>
+            <div class="blade"></div>
+            <div class="blade"></div>
+            <div class="blade"></div>
+            <div class="blade"></div>
             <div class="hub"></div>
+            <div class="hub2"></div>
+
+            <!-- слой для тапа -->
+            <div class="tapLayer" id="tapLayer"></div>
           </div>
         </div>
       </div>
 
-      <div class="bottom">
+      <div class="bottomCard">
+        <!-- ✅ 1) по умолчанию 0000 -->
         <div class="score" id="score">0000</div>
         <div class="hint">Тапай по кругу вентилятора ☝️</div>
-        <button class="btn" id="claimBtn">Забрать награды</button>
+        <button class="btn" type="button" id="claim">Забрать награды</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ========= ВРАЩЕНИЕ: медленно 1 круг/10с, при удержании 1 круг/1с =========
-    const fan = document.getElementById("fan");
-    const tapZone = document.getElementById("tapZone");
-    const scoreEl = document.getElementById("score");
-    const claimBtn = document.getElementById("claimBtn");
+    // =========================
+    // ✅ 1) СЧЕТЧИК СТАРТУЕТ С 0
+    // =========================
+    let taps = 0;
 
-    // 1 оборот за 10 секунд => 360/10 = 36 град/с
-    const slowSpeed = 36;
-    // 1 оборот за 1 секунду => 360 град/с
-    const fastSpeed = 360;
-
-    let currentSpeed = slowSpeed;
-    let targetSpeed  = slowSpeed;
-
-    let angle = 0;
-    let lastTime = null;
-
-    function animate(t){
-      if (lastTime === null) lastTime = t;
-      const dt = (t - lastTime) / 1000;
-      lastTime = t;
-
-      // плавное приближение к целевой скорости
-      currentSpeed += (targetSpeed - currentSpeed) * 0.10;
-
-      angle += currentSpeed * dt;
-      fan.style.transform = `rotate(${angle}deg)`;
-
-      requestAnimationFrame(animate);
-    }
-    requestAnimationFrame(animate);
-
-    // ========= ТАПЫ =========
-    let taps = 10; // чтобы не было пусто как на скрине; можешь поставить 0
+    const scoreEl = document.getElementById('score');
+    const tapLayer = document.getElementById('tapLayer');
+    const fan = document.getElementById('fan');
 
     function renderScore(){
-      scoreEl.textContent = String(taps).padStart(4, "0");
+      // 4 цифры как на табло (0000, 0010, 0060 и т.д.)
+      const s = String(taps).padStart(4, '0');
+      scoreEl.textContent = s;
     }
-    renderScore();
+    renderScore(); // всегда старт с 0000
 
-    // Попадание "по кругу" вентилятора (не по всему экрану)
-    function isInsideCircle(e){
-      const rect = tapZone.getBoundingClientRect();
-      const cx = rect.left + rect.width/2;
-      const cy = rect.top + rect.height/2;
+    // =========================
+    // ✅ ВРАЩЕНИЕ: 10с за круг, при тапе 1с за круг
+    // =========================
+    const IDLE_DUR = 10;  // сек
+    const TAP_DUR  = 1;   // сек
+    const BOOST_MS = 900; // держим ускорение ~1 сек
 
-      const x = (e.clientX ?? (e.touches && e.touches[0].clientX));
-      const y = (e.clientY ?? (e.touches && e.touches[0].clientY));
-      if (x == null || y == null) return false;
+    let boostTimer = null;
 
-      const dx = x - cx;
-      const dy = y - cy;
-
-      const r = rect.width/2;
-      return (dx*dx + dy*dy) <= (r*r);
+    function setSpin(seconds){
+      fan.style.setProperty('--spinDur', seconds + 's');
     }
 
-    // При удержании/тапе ускоряем, при отпускании возвращаем медленно
-    function boostOn(){
-      targetSpeed = fastSpeed;
-    }
-    function boostOff(){
-      targetSpeed = slowSpeed;
+    // старт: медленно (1 круг / 10 сек)
+    setSpin(IDLE_DUR);
+
+    function boostSpin(){
+      setSpin(TAP_DUR);
+
+      if (boostTimer) clearTimeout(boostTimer);
+      boostTimer = setTimeout(() => {
+        // плавно возвращаем обратно
+        setSpin(IDLE_DUR);
+      }, BOOST_MS);
     }
 
-    // pointer события лучше всего для iOS/Android
-    tapZone.addEventListener("pointerdown", (e) => {
-      if (!isInsideCircle(e)) return;
-      e.preventDefault();
-      boostOn();
-
-      // один тап = +1
+    // =========================
+    // ✅ ТАП: +1 и ускорение
+    // =========================
+    function onTap(){
       taps += 1;
       renderScore();
-    }, { passive:false });
+      boostSpin();
+    }
 
-    // если пользователь держит и водит пальцем по кругу — тоже можно считать тапами по желанию
-    // (сейчас НЕ считаем, только по pointerdown)
+    // pointer/touch
+    tapLayer.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      onTap();
+    }, {passive:false});
 
-    window.addEventListener("pointerup", () => boostOff());
+    // =========================
+    // ✅ 2) УБРАТЬ “ВЫДЕЛИТЬ/СКОПИРОВАТЬ”
+    // =========================
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('selectstart', (e) => e.preventDefault());
 
-    // safety: если палец ушел с экрана/вкладка свернулась
-    window.addEventListener("blur", () => boostOff());
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) boostOff();
-    });
+    // =========================
+    // ✅ 3) УБРАТЬ ЗУМ/МАСШТАБ (iOS/Telegram WebView)
+    // =========================
+    // запрет pinch-zoom (iOS)
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
 
-    // Кнопка (пока просто заглушка)
-    claimBtn.addEventListener("click", () => {
-      alert("Награды скоро будут 😉");
-    });
+    // запрет double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, {passive:false});
 
-    // Лёгкий фикс для Telegram iOS: принудительная перерисовка после загрузки
-    // (иногда без этого элементы появляются только после "обновить")
-    window.addEventListener("load", () => {
-      requestAnimationFrame(() => {
-        document.body.style.transform = "translateZ(0)";
-        setTimeout(() => (document.body.style.transform = ""), 50);
-      });
+    // запрет “двойного клика” как в браузере
+    document.addEventListener('dblclick', (e) => e.preventDefault(), {passive:false});
+
+    // кнопка награды пока без логики
+    document.getElementById('claim').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Скоро добавим награды 🙂');
     });
   </script>
 </body>
