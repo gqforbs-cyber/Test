@@ -6,12 +6,6 @@
 <title>Cooler Tap</title>
 
 <style>
-:root{
-  --img:url("./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png");
-  --speed:14s;
-  --boost:1s;
-}
-
 body{
   margin:0;
   height:100vh;
@@ -22,7 +16,6 @@ body{
   background:#050814;
   font-family:Arial;
   overflow:hidden;
-  user-select:none;
 }
 
 .stage{
@@ -33,18 +26,21 @@ body{
   cursor:pointer;
 }
 
-/* ФОН */
+/* Фон */
 .base{
   position:absolute;
   inset:0;
-  background-image:var(--img);
-  background-size:cover;
-  background-position:center;
+}
+
+.base img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
   border-radius:18px;
   box-shadow:0 20px 80px rgba(0,0,0,.45);
 }
 
-/* КРУГ ВЕНТИЛЯТОРА */
+/* Вентилятор */
 .fan{
   position:absolute;
   width:44%;
@@ -54,21 +50,21 @@ body{
   border-radius:50%;
   overflow:hidden;
   transform-origin:center;
-  animation:spin var(--speed) linear infinite;
+  animation:spin 14s linear infinite;
 }
 
-/* Картинка внутри круга */
-.fan::before{
-  content:"";
+.fan img{
+  width:227%;
+  height:227%;
+  object-fit:cover;
   position:absolute;
-  inset:-100%;
-  background-image:var(--img);
-  background-size:cover;
-  background-position:center;
+  top:-63%;
+  left:-63%;
 }
 
+/* Ускорение */
 .stage.boost .fan{
-  animation-duration:var(--boost);
+  animation-duration:1s;
 }
 
 @keyframes spin{
@@ -92,8 +88,13 @@ body{
 <body>
 
 <div id="stage" class="stage">
-  <div class="base"></div>
-  <div class="fan"></div>
+  <div class="base">
+    <img src="./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png">
+  </div>
+
+  <div class="fan">
+    <img src="./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png">
+  </div>
 </div>
 
 <div id="count" class="counter">0000</div>
