@@ -1,95 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fan Test</title>
+<title>Cooler Tap</title>
 
 <style>
-body {
-    margin:0;
-    background:#070b15;
-    color:white;
-    font-family:Arial;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    height:100vh;
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#050814;
+  font-family:Arial;
+  overflow:hidden;
 }
 
-.fan-container {
-    position:relative;
-    width:250px;
-    height:250px;
+.fan{
+  width:340px;
+  cursor:pointer;
 }
 
-.rotor {
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    position:relative;
-    animation:spin 1.5s linear infinite;
+.fan img{
+  width:100%;
+  animation:spin 6s linear infinite;
 }
 
-.blade {
-    position:absolute;
-    width:50%;
-    height:20px;
-    background:linear-gradient(90deg,#00f7ff,#004f6a);
-    top:50%;
-    left:50%;
-    transform-origin:left center;
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
 }
 
-.blade:nth-child(1){ transform:rotate(0deg); }
-.blade:nth-child(2){ transform:rotate(60deg); }
-.blade:nth-child(3){ transform:rotate(120deg); }
-.blade:nth-child(4){ transform:rotate(180deg); }
-.blade:nth-child(5){ transform:rotate(240deg); }
-.blade:nth-child(6){ transform:rotate(300deg); }
-
-@keyframes spin {
-    from { transform:rotate(0deg); }
-    to { transform:rotate(360deg); }
+.fast{
+  animation-duration:1s !important;
 }
 
-.score {
-    margin-top:30px;
-    font-size:24px;
+.score{
+  margin-top:20px;
+  font-size:40px;
+  color:#00ff88;
+  font-weight:bold;
+  letter-spacing:5px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="fan-container" onclick="boost()">
-    <div class="rotor" id="rotor">
-        <div class="blade"></div>
-        <div class="blade"></div>
-        <div class="blade"></div>
-        <div class="blade"></div>
-        <div class="blade"></div>
-        <div class="blade"></div>
-    </div>
+<div class="fan" onclick="tap()">
+  <img id="fanImg" src="A185A1F2-89F8-4539-B7F4-24DB68B30DED.png">
 </div>
 
-<div class="score">
-Баллы: <span id="score">0</span>
-</div>
+<div class="score" id="score">0000</div>
 
 <script>
-let score = 0;
-let rotor = document.getElementById("rotor");
+let count = 0;
+let fan = document.getElementById("fanImg");
 
-function boost(){
-    score++;
-    document.getElementById("score").innerText = score;
+function tap(){
+  count++;
+  document.getElementById("score").innerText =
+      count.toString().padStart(4,'0');
 
-    rotor.style.animationDuration = "0.5s";
-    setTimeout(()=>{
-        rotor.style.animationDuration = "1.5s";
-    },200);
+  fan.classList.add("fast");
+
+  setTimeout(()=>{
+    fan.classList.remove("fast");
+  },500);
 }
 </script>
 
