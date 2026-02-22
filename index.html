@@ -1,140 +1,130 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cooler Tap</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cooler Tap</title>
 
-  <style>
-    :root{
-      /* ПУТЬ К ТВОЕЙ КАРТИНКЕ */
-      --img: url("./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png");
+<style>
+:root{
+  --img:url("./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png");
 
-      /* Настройка зоны вентилятора (подгони, если нужно) */
-      --fan-x: 34%;
-      --fan-y: 58%;
-      --fan-r: 18%;
+  /* Положение вентилятора (уже подогнано под твой скрин) */
+  --fan-x: 52%;
+  --fan-y: 56%;
+  --fan-r: 22%;
 
-      --speed: 14s;        /* медленная скорость */
-      --speed-boost: 1.2s; /* ускорение при тапе */
-    }
+  --speed: 14s;
+  --speed-boost: 1s;
+}
 
-    body{
-      margin:0;
-      height:100vh;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      background:#050814;
-      font-family: Arial, sans-serif;
-      overflow:hidden;
-      user-select:none;
-      -webkit-user-select:none;
-    }
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#050814;
+  font-family:Arial;
+  overflow:hidden;
+  user-select:none;
+}
 
-    .stage{
-      width:min(92vw, 430px);
-      aspect-ratio: 768 / 1365; /* под вертикальную картинку */
-      position:relative;
-      transform: rotate(-18deg);
-      cursor:pointer;
-      touch-action: manipulation;
-    }
+.stage{
+  width:min(92vw, 420px);
+  aspect-ratio: 768/1365;
+  position:relative;
+  transform:rotate(-18deg);
+  cursor:pointer;
+  touch-action:manipulation;
+}
 
-    /* Нижний слой (НЕ крутится) */
-    .base{
-      position:absolute;
-      inset:0;
-      background-image: var(--img);
-      background-size: cover;
-      background-position:center;
-      border-radius: 18px;
-      box-shadow: 0 20px 80px rgba(0,0,0,.45);
-    }
+.base{
+  position:absolute;
+  inset:0;
+  background-image:var(--img);
+  background-size:cover;
+  background-position:center;
+  border-radius:18px;
+  box-shadow:0 20px 80px rgba(0,0,0,.45);
+}
 
-    /* Верхний слой — та же картинка, но виден только круг вентилятора */
-    .fanOnly{
-      position:absolute;
-      inset:0;
-      background-image: var(--img);
-      background-size: cover;
-      background-position:center;
+/* Крутится ТОЛЬКО круг вентилятора */
+.fanOnly{
+  position:absolute;
+  inset:0;
+  background-image:var(--img);
+  background-size:cover;
+  background-position:center;
 
-      /* Маска круга (важно для iOS) */
-      -webkit-mask-image: radial-gradient(circle var(--fan-r) at var(--fan-x) var(--fan-y),
-        #000 99%, transparent 100%);
-      mask-image: radial-gradient(circle var(--fan-r) at var(--fan-x) var(--fan-y),
-        #000 99%, transparent 100%);
+  -webkit-clip-path: circle(var(--fan-r) at var(--fan-x) var(--fan-y));
+  clip-path: circle(var(--fan-r) at var(--fan-x) var(--fan-y));
 
-      transform-origin: var(--fan-x) var(--fan-y);
-      animation: spin var(--speed) linear infinite;
-      will-change: transform;
-      pointer-events:none; /* чтобы клик ловил контейнер */
-    }
+  transform-origin: var(--fan-x) var(--fan-y);
+  animation: spin var(--speed) linear infinite;
+  pointer-events:none;
+}
 
-    .stage.boost .fanOnly{
-      animation-duration: var(--speed-boost);
-    }
+.stage.boost .fanOnly{
+  animation-duration:var(--speed-boost);
+}
 
-    @keyframes spin{
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
 
-    /* Табло снизу (счетчик кликов) */
-    .counter{
-      margin-top: 18px;
-      font-size: 68px;
-      letter-spacing: 6px;
-      font-weight: 700;
-      color: #4CFF7A;
-      text-shadow: 0 0 18px rgba(76,255,122,.35);
-      transform: translateY(-6px);
-    }
-
-    /* чтобы цифры были всегда ровно (моноширина) */
-    .counter span{
-      display:inline-block;
-      min-width: 4ch;
-      text-align:center;
-      font-variant-numeric: tabular-nums;
-    }
-  </style>
+/* Счетчик */
+.counter{
+  margin-top:20px;
+  font-size:72px;
+  font-weight:700;
+  letter-spacing:8px;
+  color:#4CFF7A;
+  text-shadow:0 0 25px rgba(76,255,122,.4);
+  font-variant-numeric:tabular-nums;
+}
+</style>
 </head>
 
 <body>
 
-  <div id="stage" class="stage" aria-label="tap">
-    <div class="base"></div>
-    <div class="fanOnly"></div>
-  </div>
+<div id="stage" class="stage">
+  <div class="base"></div>
+  <div class="fanOnly"></div>
+</div>
 
-  <div class="counter"><span id="count">0000</span></div>
+<div class="counter" id="count">0000</div>
 
-  <script>
-    const stage = document.getElementById("stage");
-    const countEl = document.getElementById("count");
+<script>
+const stage=document.getElementById("stage");
+const counter=document.getElementById("count");
 
-    let count = 0;
-    let t = null;
+let count=0;
+let timeout;
 
-    function pad4(n){
-      return String(n).padStart(4, "0");
-    }
+function pad(n){
+  return String(n).padStart(4,"0");
+}
 
-    function tap(){
-      count++;
-      countEl.textContent = pad4(count);
+function tap(){
+  count++;
+  counter.textContent=pad(count);
 
-      stage.classList.add("boost");
-      clearTimeout(t);
-      t = setTimeout(() => stage.classList.remove("boost"), 220);
-    }
+  stage.classList.add("boost");
+  clearTimeout(timeout);
+  timeout=setTimeout(()=>{
+    stage.classList.remove("boost");
+  },200);
+}
 
-    stage.addEventListener("click", tap);
-    stage.addEventListener("touchstart", (e) => { e.preventDefault(); tap(); }, {passive:false});
-  </script>
+stage.addEventListener("click",tap);
+stage.addEventListener("touchstart",e=>{
+  e.preventDefault();
+  tap();
+},{passive:false});
+</script>
 
 </body>
 </html>
