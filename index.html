@@ -8,7 +8,6 @@
   />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
   <title>Cooler Tap</title>
 
   <style>
@@ -23,7 +22,7 @@
       --btnStroke:#7dffb533;
     }
 
-    /* ✅ Убираем выделение/копирование/лупу */
+    /* ❗️Жёстко запрещаем выделение/копирование/лупу */
     html, body, *{
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
@@ -39,7 +38,7 @@
       color:var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
       overflow:hidden;
-      touch-action: manipulation;
+      touch-action: manipulation; /* анти-zoom */
     }
 
     .wrap{
@@ -113,7 +112,7 @@
       opacity:.9;
     }
 
-    /* ✅ 16 лопастей через conic-gradient */
+    /* ✅ 16 лопастей */
     .fan{
       width:78%;
       aspect-ratio:1/1;
@@ -121,95 +120,95 @@
       position:relative;
       transform: translateZ(0);
       will-change: transform;
-      animation: spin var(--spinDur, 10s) linear infinite;
 
-      /* Лопасти + “металл” */
+      animation-name: spin;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-duration: 10s; /* будет меняться JS-ом */
+
       background:
         radial-gradient(circle at 50% 50%, #ffffff18 0%, #ffffff08 38%, transparent 64%),
         radial-gradient(circle at 35% 35%, #ffffff22 0%, transparent 52%),
         conic-gradient(
           from 0deg,
           rgba(255,255,255,.00) 0deg 6deg,
-          rgba(255,255,255,.22) 6deg 12deg,
+          rgba(255,255,255,.28) 6deg 12deg,
           rgba(255,255,255,.00) 12deg 22.5deg,
 
           rgba(255,255,255,.00) 22.5deg 28.5deg,
-          rgba(255,255,255,.22) 28.5deg 34.5deg,
+          rgba(255,255,255,.28) 28.5deg 34.5deg,
           rgba(255,255,255,.00) 34.5deg 45deg,
 
           rgba(255,255,255,.00) 45deg 51deg,
-          rgba(255,255,255,.22) 51deg 57deg,
+          rgba(255,255,255,.28) 51deg 57deg,
           rgba(255,255,255,.00) 57deg 67.5deg,
 
           rgba(255,255,255,.00) 67.5deg 73.5deg,
-          rgba(255,255,255,.22) 73.5deg 79.5deg,
+          rgba(255,255,255,.28) 73.5deg 79.5deg,
           rgba(255,255,255,.00) 79.5deg 90deg,
 
           rgba(255,255,255,.00) 90deg 96deg,
-          rgba(255,255,255,.22) 96deg 102deg,
+          rgba(255,255,255,.28) 96deg 102deg,
           rgba(255,255,255,.00) 102deg 112.5deg,
 
           rgba(255,255,255,.00) 112.5deg 118.5deg,
-          rgba(255,255,255,.22) 118.5deg 124.5deg,
+          rgba(255,255,255,.28) 118.5deg 124.5deg,
           rgba(255,255,255,.00) 124.5deg 135deg,
 
           rgba(255,255,255,.00) 135deg 141deg,
-          rgba(255,255,255,.22) 141deg 147deg,
+          rgba(255,255,255,.28) 141deg 147deg,
           rgba(255,255,255,.00) 147deg 157.5deg,
 
           rgba(255,255,255,.00) 157.5deg 163.5deg,
-          rgba(255,255,255,.22) 163.5deg 169.5deg,
+          rgba(255,255,255,.28) 163.5deg 169.5deg,
           rgba(255,255,255,.00) 169.5deg 180deg,
 
           rgba(255,255,255,.00) 180deg 186deg,
-          rgba(255,255,255,.22) 186deg 192deg,
+          rgba(255,255,255,.28) 186deg 192deg,
           rgba(255,255,255,.00) 192deg 202.5deg,
 
           rgba(255,255,255,.00) 202.5deg 208.5deg,
-          rgba(255,255,255,.22) 208.5deg 214.5deg,
+          rgba(255,255,255,.28) 208.5deg 214.5deg,
           rgba(255,255,255,.00) 214.5deg 225deg,
 
           rgba(255,255,255,.00) 225deg 231deg,
-          rgba(255,255,255,.22) 231deg 237deg,
+          rgba(255,255,255,.28) 231deg 237deg,
           rgba(255,255,255,.00) 237deg 247.5deg,
 
           rgba(255,255,255,.00) 247.5deg 253.5deg,
-          rgba(255,255,255,.22) 253.5deg 259.5deg,
+          rgba(255,255,255,.28) 253.5deg 259.5deg,
           rgba(255,255,255,.00) 259.5deg 270deg,
 
           rgba(255,255,255,.00) 270deg 276deg,
-          rgba(255,255,255,.22) 276deg 282deg,
+          rgba(255,255,255,.28) 276deg 282deg,
           rgba(255,255,255,.00) 282deg 292.5deg,
 
           rgba(255,255,255,.00) 292.5deg 298.5deg,
-          rgba(255,255,255,.22) 298.5deg 304.5deg,
+          rgba(255,255,255,.28) 298.5deg 304.5deg,
           rgba(255,255,255,.00) 304.5deg 315deg,
 
           rgba(255,255,255,.00) 315deg 321deg,
-          rgba(255,255,255,.22) 321deg 327deg,
+          rgba(255,255,255,.28) 321deg 327deg,
           rgba(255,255,255,.00) 327deg 337.5deg,
 
           rgba(255,255,255,.00) 337.5deg 343.5deg,
-          rgba(255,255,255,.22) 343.5deg 349.5deg,
+          rgba(255,255,255,.28) 343.5deg 349.5deg,
           rgba(255,255,255,.00) 349.5deg 360deg
         );
 
-      filter:
-        drop-shadow(0 14px 26px #00000055)
-        contrast(1.08);
+      filter: drop-shadow(0 14px 26px #00000055) contrast(1.1);
       opacity:1;
     }
 
     .fan::after{
-      /* лёгкий “стеклянный” блик поверх лопастей */
       content:"";
       position:absolute;
       inset:0;
       border-radius:50%;
-      background: radial-gradient(circle at 35% 30%, #ffffff18 0%, transparent 45%);
+      background: radial-gradient(circle at 35% 30%, #ffffff1d 0%, transparent 45%);
       pointer-events:none;
       mix-blend-mode: screen;
-      opacity:.9;
+      opacity:.95;
     }
 
     .hub{
@@ -222,7 +221,6 @@
       border-radius:50%;
       background: radial-gradient(circle at 35% 35%, #ffffff2a 0%, #ffffff10 55%, #00000022 100%);
       border:1px solid #ffffff22;
-      box-shadow: inset 0 0 0 1px #00000020;
       pointer-events:none;
     }
 
@@ -243,12 +241,15 @@
       to{ transform: rotate(360deg); }
     }
 
+    /* ✅ слой для тапов поверх всего вентилятора */
     .tapLayer{
       position:absolute;
-      inset:0;
+      inset:-18%; /* чуть шире, чтобы попадать легче */
       border-radius:50%;
-      z-index:5;
+      z-index:10;
       background: transparent;
+      cursor:pointer;
+      touch-action: manipulation;
     }
 
     .bottomCard{
@@ -294,17 +295,12 @@
       cursor:pointer;
       display:block;
     }
-
-    .btn:active{
-      transform: translateY(1px);
-      filter: brightness(1.05);
-    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="panel" id="panel">
+    <div class="panel">
       <div class="topRow">
         <div class="pill">Cooler Tap</div>
         <div class="pill">v0.1</div>
@@ -331,26 +327,33 @@
   </div>
 
   <script>
-    // ✅ 1) Всегда старт с 0000
+    // ✅ Telegram init (важно для Haptic)
+    try{
+      if (window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+      }
+    }catch(e){}
+
+    // ✅ счёт всегда с нуля
     let taps = 0;
     const scoreEl = document.getElementById('score');
     const tapLayer = document.getElementById('tapLayer');
     const fan = document.getElementById('fan');
 
     function renderScore(){
-      scoreEl.textContent = String(taps).padStart(4, '0');
+      scoreEl.textContent = String(taps).padStart(4,'0');
     }
     renderScore();
 
-    // ✅ Вращение: idle 10s/круг, tap 1s/круг
-    const IDLE_DUR = 10;   // сек
-    const TAP_DUR  = 1;    // сек
-    const BOOST_MS = 900;  // держим ускорение
-
+    // ✅ скорость: idle 10 сек/круг, tap 1 сек/круг
+    const IDLE_DUR = 10;
+    const TAP_DUR  = 1;
+    const BOOST_MS = 900;
     let boostTimer = null;
 
     function setSpin(seconds){
-      fan.style.setProperty('--spinDur', seconds + 's');
+      fan.style.animationDuration = seconds + 's'; // ❗️на iOS так надёжнее
     }
     setSpin(IDLE_DUR);
 
@@ -360,7 +363,7 @@
       boostTimer = setTimeout(() => setSpin(IDLE_DUR), BOOST_MS);
     }
 
-    // ✅ Вибрация (в Telegram — лучше через HapticFeedback)
+    // ✅ вибрация (iPhone -> только Telegram Haptic)
     function haptic(){
       try{
         if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
@@ -368,27 +371,28 @@
           return;
         }
       }catch(e){}
+      // запасной вариант (на iOS обычно не работает, но пусть будет)
       if (navigator.vibrate) navigator.vibrate(15);
     }
 
-    function onTap(){
+    function onTap(e){
+      if (e) e.preventDefault();
       taps += 1;
       renderScore();
       boostSpin();
       haptic();
     }
 
-    // pointer/touch
-    tapLayer.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      onTap();
-    }, {passive:false});
+    // ✅ ловим ВСЕ варианты тапа в webview
+    tapLayer.addEventListener('touchstart', onTap, {passive:false});
+    tapLayer.addEventListener('pointerdown', onTap, {passive:false});
+    tapLayer.addEventListener('mousedown', onTap);
 
-    // ✅ 2) убрать меню “копировать/выделить”
+    // ✅ убрать меню копирования/выделения
     document.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('selectstart', (e) => e.preventDefault());
 
-    // ✅ 3) убрать zoom/масштаб (iOS/Telegram WebView)
+    // ✅ убрать zoom (двойной тап / жесты)
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('gesturechange', (e) => e.preventDefault());
     document.addEventListener('gestureend', (e) => e.preventDefault());
@@ -399,7 +403,6 @@
       if (now - lastTouchEnd <= 300) e.preventDefault();
       lastTouchEnd = now;
     }, {passive:false});
-
     document.addEventListener('dblclick', (e) => e.preventDefault(), {passive:false});
 
     document.getElementById('claim').addEventListener('click', (e) => {
