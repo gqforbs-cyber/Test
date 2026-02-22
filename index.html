@@ -8,14 +8,8 @@
 <style>
 :root{
   --img:url("./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png");
-
-  /* Положение вентилятора (уже подогнано под твой скрин) */
-  --fan-x: 52%;
-  --fan-y: 56%;
-  --fan-r: 22%;
-
-  --speed: 14s;
-  --speed-boost: 1s;
+  --speed:14s;
+  --boost:1s;
 }
 
 body{
@@ -32,14 +26,14 @@ body{
 }
 
 .stage{
-  width:min(92vw, 420px);
-  aspect-ratio: 768/1365;
+  width:min(92vw,420px);
+  aspect-ratio:768/1365;
   position:relative;
   transform:rotate(-18deg);
   cursor:pointer;
-  touch-action:manipulation;
 }
 
+/* ФОН */
 .base{
   position:absolute;
   inset:0;
@@ -50,24 +44,31 @@ body{
   box-shadow:0 20px 80px rgba(0,0,0,.45);
 }
 
-/* Крутится ТОЛЬКО круг вентилятора */
-.fanOnly{
+/* КРУГ ВЕНТИЛЯТОРА */
+.fan{
   position:absolute;
-  inset:0;
+  width:44%;
+  aspect-ratio:1/1;
+  top:34%;
+  left:28%;
+  border-radius:50%;
+  overflow:hidden;
+  transform-origin:center;
+  animation:spin var(--speed) linear infinite;
+}
+
+/* Картинка внутри круга */
+.fan::before{
+  content:"";
+  position:absolute;
+  inset:-100%;
   background-image:var(--img);
   background-size:cover;
   background-position:center;
-
-  -webkit-clip-path: circle(var(--fan-r) at var(--fan-x) var(--fan-y));
-  clip-path: circle(var(--fan-r) at var(--fan-x) var(--fan-y));
-
-  transform-origin: var(--fan-x) var(--fan-y);
-  animation: spin var(--speed) linear infinite;
-  pointer-events:none;
 }
 
-.stage.boost .fanOnly{
-  animation-duration:var(--speed-boost);
+.stage.boost .fan{
+  animation-duration:var(--boost);
 }
 
 @keyframes spin{
@@ -92,10 +93,10 @@ body{
 
 <div id="stage" class="stage">
   <div class="base"></div>
-  <div class="fanOnly"></div>
+  <div class="fan"></div>
 </div>
 
-<div class="counter" id="count">0000</div>
+<div id="count" class="counter">0000</div>
 
 <script>
 const stage=document.getElementById("stage");
