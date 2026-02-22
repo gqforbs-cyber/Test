@@ -1,76 +1,140 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cooler Tap</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cooler Tap</title>
 
-<style>
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  background:#050814;
-  font-family:Arial;
-  overflow:hidden;
-}
+  <style>
+    :root{
+      /* ПУТЬ К ТВОЕЙ КАРТИНКЕ */
+      --img: url("./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png");
 
-.fan{
-  width:340px;
-  cursor:pointer;
-}
+      /* Настройка зоны вентилятора (подгони, если нужно) */
+      --fan-x: 34%;
+      --fan-y: 58%;
+      --fan-r: 18%;
 
-.fan img{
-  width:100%;
-  animation:spin 6s linear infinite;
-}
+      --speed: 14s;        /* медленная скорость */
+      --speed-boost: 1.2s; /* ускорение при тапе */
+    }
 
-@keyframes spin{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
-}
+    body{
+      margin:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:#050814;
+      font-family: Arial, sans-serif;
+      overflow:hidden;
+      user-select:none;
+      -webkit-user-select:none;
+    }
 
-.fast{
-  animation-duration:1s !important;
-}
+    .stage{
+      width:min(92vw, 430px);
+      aspect-ratio: 768 / 1365; /* под вертикальную картинку */
+      position:relative;
+      transform: rotate(-18deg);
+      cursor:pointer;
+      touch-action: manipulation;
+    }
 
-.score{
-  margin-top:20px;
-  font-size:40px;
-  color:#00ff88;
-  font-weight:bold;
-  letter-spacing:5px;
-}
-</style>
+    /* Нижний слой (НЕ крутится) */
+    .base{
+      position:absolute;
+      inset:0;
+      background-image: var(--img);
+      background-size: cover;
+      background-position:center;
+      border-radius: 18px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.45);
+    }
+
+    /* Верхний слой — та же картинка, но виден только круг вентилятора */
+    .fanOnly{
+      position:absolute;
+      inset:0;
+      background-image: var(--img);
+      background-size: cover;
+      background-position:center;
+
+      /* Маска круга (важно для iOS) */
+      -webkit-mask-image: radial-gradient(circle var(--fan-r) at var(--fan-x) var(--fan-y),
+        #000 99%, transparent 100%);
+      mask-image: radial-gradient(circle var(--fan-r) at var(--fan-x) var(--fan-y),
+        #000 99%, transparent 100%);
+
+      transform-origin: var(--fan-x) var(--fan-y);
+      animation: spin var(--speed) linear infinite;
+      will-change: transform;
+      pointer-events:none; /* чтобы клик ловил контейнер */
+    }
+
+    .stage.boost .fanOnly{
+      animation-duration: var(--speed-boost);
+    }
+
+    @keyframes spin{
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Табло снизу (счетчик кликов) */
+    .counter{
+      margin-top: 18px;
+      font-size: 68px;
+      letter-spacing: 6px;
+      font-weight: 700;
+      color: #4CFF7A;
+      text-shadow: 0 0 18px rgba(76,255,122,.35);
+      transform: translateY(-6px);
+    }
+
+    /* чтобы цифры были всегда ровно (моноширина) */
+    .counter span{
+      display:inline-block;
+      min-width: 4ch;
+      text-align:center;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="fan" onclick="tap()">
-  <img id="fanImg" src="A185A1F2-89F8-4539-B7F4-24DB68B30DED.png">
-</div>
+  <div id="stage" class="stage" aria-label="tap">
+    <div class="base"></div>
+    <div class="fanOnly"></div>
+  </div>
 
-<div class="score" id="score">0000</div>
+  <div class="counter"><span id="count">0000</span></div>
 
-<script>
-let count = 0;
-let fan = document.getElementById("fanImg");
+  <script>
+    const stage = document.getElementById("stage");
+    const countEl = document.getElementById("count");
 
-function tap(){
-  count++;
-  document.getElementById("score").innerText =
-      count.toString().padStart(4,'0');
+    let count = 0;
+    let t = null;
 
-  fan.classList.add("fast");
+    function pad4(n){
+      return String(n).padStart(4, "0");
+    }
 
-  setTimeout(()=>{
-    fan.classList.remove("fast");
-  },500);
-}
-</script>
+    function tap(){
+      count++;
+      countEl.textContent = pad4(count);
+
+      stage.classList.add("boost");
+      clearTimeout(t);
+      t = setTimeout(() => stage.classList.remove("boost"), 220);
+    }
+
+    stage.addEventListener("click", tap);
+    stage.addEventListener("touchstart", (e) => { e.preventDefault(); tap(); }, {passive:false});
+  </script>
 
 </body>
 </html>
