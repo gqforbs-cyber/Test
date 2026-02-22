@@ -7,18 +7,29 @@
 
 <style>
 :root{
-  --card-tilt:-18deg;
+  /* === ТВОЙ ФАЙЛ КАРТИНКИ (замени!) === */
+  --img: url("./IMAGE_FILE");
 
-  --fan-size:44%;
-  --fan-top:34%;
-  --fan-left:28%;
+  /* === НАСТРОЙКА КУЛЕРА (подгонка) ===
+     Центр круга (cx, cy) и радиус (r) в процентах от всей картинки.
+     Их можно чуть подкрутить, если надо.
+  */
+  --fan-cx: 43%;
+  --fan-cy: 46%;
+  --fan-r: 22%;
 
-  --disp-top:58.2%;
-  --disp-left:16.5%;
-  --disp-w:67%;
-  --disp-h:10.5%;
+  /* === ЗОНА ТАБЛО (подгонка) === */
+  --disp-top: 62%;
+  --disp-left: 18%;
+  --disp-w: 64%;
+  --disp-h: 10%;
+
+  /* скорости */
+  --spin-slow: 10s;
+  --spin-fast: 0.9s;
 }
 
+*{box-sizing:border-box}
 body{
   margin:0;
   height:100vh;
@@ -26,124 +37,127 @@ body{
   align-items:center;
   justify-content:center;
   background:#050814;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   overflow:hidden;
   user-select:none;
   touch-action:manipulation;
 }
 
-/* === КАРТОЧКА === */
+/* Карточка без перекоса — ровно */
 .stage{
-  width:min(92vw,420px);
+  width:min(92vw, 420px);
   aspect-ratio:768/1365;
   position:relative;
-  transform:rotate(var(--card-tilt));
-  cursor:pointer;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 90px rgba(0,0,0,.45);
 }
 
-/* ФОН */
-.base{
+/* Фон-картинка (НЕ вращается) */
+.bg{
   position:absolute;
   inset:0;
-}
-.base img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  border-radius:18px;
-  box-shadow:0 20px 90px rgba(0,0,0,.45);
-  display:block;
+  background-image: var(--img);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  background-position:center;
 }
 
-/* === НЕОНОВОЕ ПУЛЬСИРОВАНИЕ === */
-.stage::before{
-  content:"";
+/* Вырезанный круг кулера, который вращается */
+.fanLayer{
   position:absolute;
-  inset:-10%;
-  background:radial-gradient(circle at 30% 40%, rgba(0,255,255,.15), transparent 60%),
-             radial-gradient(circle at 70% 60%, rgba(255,0,255,.15), transparent 60%);
-  animation:glowPulse 3s infinite ease-in-out;
-  pointer-events:none;
+  inset:0;
+  background-image: var(--img);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  background-position:center;
+
+  /* вырезаем круг */
+  clip-path: circle(var(--fan-r) at var(--fan-cx) var(--fan-cy));
+
+  /* крутим вокруг центра круга */
+  transform-origin: var(--fan-cx) var(--fan-cy);
+  animation: spin var(--spin-slow) linear infinite;
 }
 
-@keyframes glowPulse{
-  0%{opacity:.4}
-  50%{opacity:1}
-  100%{opacity:.4}
-}
-
-/* === МИГАЮЩИЕ ЛАМПОЧКИ === */
-.spark{
-  position:absolute;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:#00ffff;
-  box-shadow:0 0 12px #00ffff;
-  animation:blink 2s infinite ease-in-out;
-}
-
-.spark:nth-child(1){top:20%;left:15%;animation-delay:0s;}
-.spark:nth-child(2){top:40%;left:80%;animation-delay:0.5s;}
-.spark:nth-child(3){top:70%;left:30%;animation-delay:1s;}
-.spark:nth-child(4){top:60%;left:60%;animation-delay:1.5s;}
-
-@keyframes blink{
-  0%{opacity:.2;transform:scale(.7);}
-  50%{opacity:1;transform:scale(1.4);}
-  100%{opacity:.2;transform:scale(.7);}
-}
-
-/* === ВЕНТИЛЯТОР === */
-.fan{
-  position:absolute;
-  width:var(--fan-size);
-  aspect-ratio:1/1;
-  top:var(--fan-top);
-  left:var(--fan-left);
-  border-radius:50%;
-  overflow:hidden;
-  transform-origin:center;
-  animation:spin 10s linear infinite;
-  pointer-events:none;
-}
-.fan img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-}
-
-.stage.boost .fan{
-  animation-duration:0.9s;
+/* ускорение при клике */
+.stage.boost .fanLayer{
+  animation-duration: var(--spin-fast);
 }
 
 @keyframes spin{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
 }
 
-/* === СЧЕТЧИК === */
+/* Табло со счетчиком поверх */
 .display{
   position:absolute;
-  top:var(--disp-top);
-  left:var(--disp-left);
-  width:var(--disp-w);
-  height:var(--disp-h);
+  top: var(--disp-top);
+  left: var(--disp-left);
+  width: var(--disp-w);
+  height: var(--disp-h);
   display:flex;
   align-items:center;
   justify-content:center;
   pointer-events:none;
 }
+
 .digits{
-  font-size:clamp(28px,7vw,52px);
-  font-weight:700;
-  letter-spacing:6px;
+  font-size: clamp(28px, 8vw, 58px);
+  font-weight: 800;
+  letter-spacing: 6px;
   color:#7CFF9B;
   text-shadow:
     0 0 10px rgba(124,255,155,.35),
     0 0 24px rgba(124,255,155,.25);
-  font-variant-numeric:tabular-nums;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Немного “жизни”: мягкие неоновые пульсации сверху */
+.stage::before{
+  content:"";
+  position:absolute;
+  inset:-10%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,255,255,.18), transparent 55%),
+    radial-gradient(circle at 80% 65%, rgba(255,0,255,.16), transparent 55%);
+  animation: glowPulse 3s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes glowPulse{
+  0%{opacity:.35}
+  50%{opacity:1}
+  100%{opacity:.35}
+}
+
+/* LED точки */
+.spark{
+  position:absolute;
+  width:6px;height:6px;border-radius:50%;
+  background:#00ffff;
+  box-shadow:0 0 12px #00ffff;
+  opacity:.2;
+  animation: blink 2s infinite ease-in-out;
+  pointer-events:none;
+}
+.spark.s1{top:22%;left:14%;animation-delay:0s}
+.spark.s2{top:40%;left:82%;animation-delay:.5s;background:#ff4dff;box-shadow:0 0 12px #ff4dff}
+.spark.s3{top:72%;left:28%;animation-delay:1s}
+.spark.s4{top:64%;left:64%;animation-delay:1.5s;background:#7cff9b;box-shadow:0 0 12px #7cff9b}
+
+@keyframes blink{
+  0%{opacity:.2;transform:scale(.7)}
+  50%{opacity:1;transform:scale(1.4)}
+  100%{opacity:.2;transform:scale(.7)}
+}
+
+/* Клик по всей карточке */
+.clickLayer{
+  position:absolute;
+  inset:0;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -151,52 +165,43 @@ body{
 <body>
 
 <div id="stage" class="stage">
+  <div class="bg"></div>
+  <div class="fanLayer"></div>
 
-  <div class="base">
-    <img src="./A185A1F2-89F8-4539-B7F4-24DB68B30DED.png">
-  </div>
+  <div class="spark s1"></div>
+  <div class="spark s2"></div>
+  <div class="spark s3"></div>
+  <div class="spark s4"></div>
 
-  <!-- МИГАЮЩИЕ ТОЧКИ -->
-  <div class="spark"></div>
-  <div class="spark"></div>
-  <div class="spark"></div>
-  <div class="spark"></div>
+  <div class="display"><div id="count" class="digits">0000</div></div>
 
-  <!-- ВЕНТИЛЯТОР -->
-  <div class="fan">
-    <img src="./fan.png">
-  </div>
-
-  <!-- ТАБЛО -->
-  <div class="display">
-    <div id="count" class="digits">0000</div>
-  </div>
-
+  <div class="clickLayer" id="tap"></div>
 </div>
 
 <script>
-const stage=document.getElementById('stage');
-const countEl=document.getElementById('count');
+const stage = document.getElementById("stage");
+const tap = document.getElementById("tap");
+const countEl = document.getElementById("count");
 
-let count=0;
+let count = 0;
 let t;
 
-const pad4=n=>String(n).padStart(4,'0');
+const pad4 = n => String(n).padStart(4, "0");
 
-function tap(){
+function doTap(){
   count++;
-  countEl.textContent=pad4(count);
+  countEl.textContent = pad4(count);
 
-  stage.classList.add('boost');
+  stage.classList.add("boost");
   clearTimeout(t);
-  t=setTimeout(()=>stage.classList.remove('boost'),160);
+  t = setTimeout(()=>stage.classList.remove("boost"), 160);
 }
 
-stage.addEventListener('click',tap);
-stage.addEventListener('touchstart',e=>{
+tap.addEventListener("click", doTap);
+tap.addEventListener("touchstart", (e)=>{
   e.preventDefault();
-  tap();
-},{passive:false});
+  doTap();
+}, {passive:false});
 </script>
 
 </body>
