@@ -1,60 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Mini App Test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      background: #0b0f1a;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fan Test</title>
 
-    .fan {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #00f7ff 10%, #003b4a 60%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      animation: spin 2s linear infinite;
-    }
+<style>
+body {
+    margin:0;
+    background:#070b15;
+    color:white;
+    font-family:Arial;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+}
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+.fan-container {
+    position:relative;
+    width:250px;
+    height:250px;
+}
 
-    .score {
-      margin-top: 20px;
-      font-size: 24px;
-    }
-  </style>
+.rotor {
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    position:relative;
+    animation:spin 1.5s linear infinite;
+}
+
+.blade {
+    position:absolute;
+    width:50%;
+    height:20px;
+    background:linear-gradient(90deg,#00f7ff,#004f6a);
+    top:50%;
+    left:50%;
+    transform-origin:left center;
+}
+
+.blade:nth-child(1){ transform:rotate(0deg); }
+.blade:nth-child(2){ transform:rotate(60deg); }
+.blade:nth-child(3){ transform:rotate(120deg); }
+.blade:nth-child(4){ transform:rotate(180deg); }
+.blade:nth-child(5){ transform:rotate(240deg); }
+.blade:nth-child(6){ transform:rotate(300deg); }
+
+@keyframes spin {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(360deg); }
+}
+
+.score {
+    margin-top:30px;
+    font-size:24px;
+}
+</style>
 </head>
+
 <body>
 
-<div class="fan" onclick="addScore()"></div>
+<div class="fan-container" onclick="boost()">
+    <div class="rotor" id="rotor">
+        <div class="blade"></div>
+        <div class="blade"></div>
+        <div class="blade"></div>
+        <div class="blade"></div>
+        <div class="blade"></div>
+        <div class="blade"></div>
+    </div>
+</div>
 
 <div class="score">
-  Баллы: <span id="score">0</span>
+Баллы: <span id="score">0</span>
 </div>
 
 <script>
-  let score = 0;
+let score = 0;
+let rotor = document.getElementById("rotor");
 
-  function addScore() {
+function boost(){
     score++;
     document.getElementById("score").innerText = score;
-  }
+
+    rotor.style.animationDuration = "0.5s";
+    setTimeout(()=>{
+        rotor.style.animationDuration = "1.5s";
+    },200);
+}
 </script>
 
 </body>
