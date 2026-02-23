@@ -2,519 +2,521 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+  />
   <title>Cooler Tap</title>
 
-  <!-- Telegram WebApp API (для Haptic в Telegram) -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
-    html, body, *{
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-text-size-adjust: 100%;
+    :root{
+      --bg1:#0a245f;
+      --bg2:#070f2f;
+      --glass: rgba(255,255,255,.08);
+      --glass2: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.14);
+      --mint: #7CFFB7;
+      --mint2:#57f6a1;
+      --text: rgba(255,255,255,.85);
+      --muted: rgba(255,255,255,.45);
+      --shadow: 0 24px 60px rgba(0,0,0,.55);
     }
-    html, body{
+
+    *{ box-sizing:border-box; }
+    html,body{
       height:100%;
       margin:0;
-      overflow:hidden;
-      touch-action: manipulation; /* анти-zoom */
-      background: radial-gradient(1200px 900px at 50% 15%, #1c3f87 0%, #0b1d44 35%, #140b3a 100%);
+      background: radial-gradient(1200px 900px at 50% 20%, #0f3aa0 0%, var(--bg1) 35%, var(--bg2) 100%);
+      color:var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
-      color:#e9f1ff;
+
+      /* ВАЖНО: убираем выделения/лупу/копировать */
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
+      -webkit-tap-highlight-color: transparent;
+
+      /* убираем резиновый зум/скролл */
+      overscroll-behavior: none;
+    }
+
+    /* ВАЖНО: предотвращаем двойной тап зум */
+    body{
+      touch-action: manipulation;
     }
 
     .wrap{
-      height:100%;
+      min-height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom) 14px;
-      box-sizing:border-box;
+      padding: 22px 14px calc(22px + env(safe-area-inset-bottom));
     }
 
-    .panel{
-      width:min(420px, 92vw);
-      height:min(860px, 92vh);
-      border-radius:34px;
-      background: linear-gradient(180deg, #3b6bb344 0%, #1a2a5a55 40%, #1a0e3a66 100%);
-      border:1px solid #ffffff22;
-      box-shadow: 0 30px 80px #00000066;
+    .card{
+      width:min(430px, 94vw);
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      padding: 18px;
       position:relative;
-      padding:18px;
-      box-sizing:border-box;
       overflow:hidden;
     }
 
-    .topRow{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
-    }
-    .pill{
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid #ffffff22;
-      background:#ffffff10;
-      font-weight:600;
-      color:#d8e6ff;
-    }
-
-    .tapZone{
-      margin-top:10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height: calc(100% - 250px); /* оставляем место под нижнюю карточку */
-    }
-
-    .coinOuter{
-      width:min(340px, 72vw);
-      aspect-ratio:1/1;
-      border-radius:50%;
-      border:1px solid #ffffff22;
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
       background:
-        radial-gradient(circle at 50% 50%, #ffffff12 0%, #ffffff07 45%, transparent 72%),
-        radial-gradient(circle at 50% 45%, #00000025 0%, transparent 60%);
+        radial-gradient(420px 320px at 20% 10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(520px 420px at 90% 40%, rgba(124,255,183,.10), transparent 60%),
+        radial-gradient(520px 520px at 50% 95%, rgba(124,255,183,.08), transparent 60%);
+      filter: blur(10px);
+      pointer-events:none;
+    }
+
+    .top{
       position:relative;
       display:flex;
       align-items:center;
-      justify-content:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 6px 4px 14px;
+    }
+
+    .pill{
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.78);
+      font-weight: 600;
+      letter-spacing:.2px;
+    }
+
+    .tap-area{
+      position:relative;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding: 18px 14px 16px;
       overflow:hidden;
-      transform: translateZ(0);
+    }
+
+    .tap-area::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(520px 420px at 50% 30%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(540px 540px at 50% 70%, rgba(0,0,0,.30), transparent 65%);
+      pointer-events:none;
     }
 
     .rings{
       position:absolute;
       inset:0;
-      border-radius:50%;
-      background:
-        radial-gradient(circle at 50% 50%, transparent 0 36%, #ffffff12 36% 36.3%, transparent 36.3% 52%, #ffffff10 52% 52.3%, transparent 52.3% 100%);
       pointer-events:none;
-      opacity:.9;
+      opacity:.55;
     }
-
-    /* ====== USDT coin ====== */
-    .coin{
-      width:78%;
-      aspect-ratio:1/1;
-      border-radius:50%;
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:
-        radial-gradient(circle at 30% 25%, rgba(255,255,255,.35) 0%, rgba(255,255,255,.06) 35%, rgba(0,0,0,.10) 100%),
-        radial-gradient(circle at 50% 55%, rgba(0,0,0,.18) 0%, transparent 60%);
-      box-shadow: 0 18px 40px #00000055;
-      border: 1px solid rgba(255,255,255,.22);
-      transform: translateZ(0);
-      will-change: transform;
-    }
-
-    .coinFace{
-      width:88%;
-      height:88%;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      overflow:hidden;
-      background: radial-gradient(circle at 50% 40%, rgba(0,0,0,.08) 0%, rgba(0,0,0,.30) 78%);
-    }
-
-    /* SVG logo container */
-    .logoWrap{
-      width:74%;
-      height:74%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      transform: translateZ(0);
-    }
-
-    .logo{
-      width:100%;
-      height:100%;
-      display:block;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
-    }
-
-    /* Tap layer (невидимый, чтобы идеально ловить тап) */
-    .tapLayer{
+    .ring{
       position:absolute;
-      inset:-18%;
+      left:50%;
+      top:38%;
+      transform: translate(-50%, -50%);
       border-radius:50%;
-      z-index:20;
-      background:transparent;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .ring.r1{ width: 76%; aspect-ratio:1; }
+    .ring.r2{ width: 62%; aspect-ratio:1; opacity:.7; }
+    .ring.r3{ width: 48%; aspect-ratio:1; opacity:.55; }
+    .ring.r4{ width: 34%; aspect-ratio:1; opacity:.45; }
+
+    /* Кнопка-значок USDT */
+    .coin-wrap{
+      position:relative;
+      display:flex;
+      justify-content:center; /* <-- центрируем */
+      align-items:center;
+      padding-top: 44px;
+      padding-bottom: 18px;
+      min-height: 340px;
+    }
+
+    .coin{
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18);
+      background: radial-gradient(80px 80px at 35% 30%, rgba(255,255,255,.22), transparent 60%),
+                  radial-gradient(120px 120px at 70% 75%, rgba(0,0,0,.35), transparent 60%),
+                  linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.25));
+      box-shadow: 0 20px 50px rgba(0,0,0,.55);
+      position:relative;
+      display:grid;
+      place-items:center;
+      transform: translateZ(0);
+      cursor:pointer;
+
+      /* чтоб не выделялось/не зумилось */
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
       touch-action: manipulation;
     }
 
-    /* Нажатие */
-    .pressed .coin{
-      transform: scale(0.985);
+    .coin::after{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      border-radius:50%;
+      border: 1px solid rgba(255,255,255,.10);
+      opacity:.55;
+      pointer-events:none;
     }
 
-    /* ====== cracks overlays ====== */
-    .crack{
+    .coin:active{
+      transform: scale(.98);
+    }
+
+    .coin-inner{
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #21c77c, #0ea25f);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 10px 20px rgba(255,255,255,.12),
+                  inset 0 -14px 20px rgba(0,0,0,.25);
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .coin-inner::before{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background: radial-gradient(120px 90px at 30% 25%, rgba(255,255,255,.24), transparent 60%);
+      transform: rotate(-15deg);
+      pointer-events:none;
+    }
+
+    /* SVG USDT */
+    .usdt{
+      width: 72px;
+      height: 72px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,.30));
+    }
+
+    /* Трещины */
+    .cracks{
       position:absolute;
       inset:0;
       pointer-events:none;
+    }
+    .crack{
+      position:absolute;
+      inset:0;
       opacity:0;
       transition: opacity .18s ease;
       mix-blend-mode: screen;
     }
+    .crack svg{
+      width:100%;
+      height:100%;
+      opacity:.9;
+    }
+    .crack path{
+      stroke: rgba(255,255,255,.75);
+      stroke-width: 2.2;
+      fill:none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.45));
+    }
 
-    /* 1 трещина */
-    .stage1 .crack1{ opacity: 0.95; }
-
-    /* ещё 3 трещины */
-    .stage2 .crack1,
-    .stage2 .crack2,
-    .stage2 .crack3,
-    .stage2 .crack4{ opacity: 0.95; }
-
-    /* ====== break animation ====== */
-    .broken .coinWhole{ opacity:0; transform: scale(0.98); }
-    .coinWhole{ transition: opacity .16s ease, transform .16s ease; }
-
-    .coinHalves{
+    /* Осколки при финале */
+    .shards{
       position:absolute;
       inset:0;
-      opacity:0;
       pointer-events:none;
+      opacity:0;
     }
-    .broken .coinHalves{ opacity:1; }
-
-    .half{
+    .shard{
       position:absolute;
-      top:0; bottom:0;
-      width:50%;
-      overflow:hidden;
-      transform: translateZ(0);
-      will-change: transform;
+      left:50%;
+      top:50%;
+      width: 18px;
+      height: 10px;
+      border-radius: 3px;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.22);
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.45));
+      transform: translate(-50%, -50%) rotate(0deg);
+      opacity:0;
     }
-    .half.left{ left:0; }
-    .half.right{ right:0; }
 
-    .half .coin, .half .coinFace, .half .logoWrap, .half .logo{
-      width:200%;
-      height:100%;
+    .broken .shards{
+      opacity:1;
     }
-    .half.left .coin{ transform-origin: 100% 50%; }
-    .half.right .coin{ transform-origin: 0% 50%; }
-
-    .half.left .coin{ transform: translateX(0); }
-    .half.right .coin{ transform: translateX(-50%); }
-
-    @keyframes splitLeft{
-      to{ transform: translateX(-18px) rotate(-6deg); }
+    .broken .shard{
+      animation: fly .55s ease-out forwards;
     }
-    @keyframes splitRight{
-      to{ transform: translateX(18px) rotate(6deg); }
+    @keyframes fly{
+      0%{ transform: translate(-50%, -50%) rotate(var(--r)) scale(.9); opacity:0; }
+      12%{ opacity:1; }
+      100%{ transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(calc(var(--r) * 1.6)) scale(.95); opacity:0; }
     }
-    .broken .half.left{ animation: splitLeft .28s ease-out forwards; }
-    .broken .half.right{ animation: splitRight .28s ease-out forwards; }
 
-    /* ====== bottom card ====== */
-    .bottomCard{
-      position:absolute;
-      left:18px; right:18px; bottom:20px;
-      border-radius:26px;
-      border:1px solid #ffffff22;
-      background: linear-gradient(180deg, #0b1327aa 0%, #120b33bb 100%);
-      padding:18px 18px 14px;
+    /* Панель счётчика */
+    .panel{
+      position:relative;
+      margin-top: 6px;
+      border-radius: 26px;
+      padding: 22px 16px 16px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
 
     .score{
-      font-size:84px;
-      line-height:1;
-      font-weight:800;
-      letter-spacing:6px;
+      font-size: 96px;
+      line-height: 1;
+      letter-spacing: 4px;
       text-align:center;
-      color:#7dffb5;
-      text-shadow: 0 0 18px #7dffb540;
-      margin:4px 0 6px;
+      color: var(--mint);
+      font-weight: 800;
+      text-shadow: 0 16px 30px rgba(0,0,0,.55);
+      font-variant-numeric: tabular-nums;
     }
 
-    .subline{
+    .hint{
+      margin-top: 10px;
       text-align:center;
-      color:#b8c7ea99;
-      font-size:16px;
-      margin-bottom:12px;
-      min-height: 20px;
+      color: rgba(255,255,255,.40);
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .hint b{
+      color: rgba(255,255,255,.65);
+      font-weight: 700;
     }
 
     .btn{
+      margin-top: 16px;
       width:100%;
-      border-radius:18px;
-      padding:16px 16px;
-      background:#0f1a2a88;
-      border:1px solid #7dffb533;
-      color:#eaf4ff;
-      font-size:26px;
-      font-weight:800;
-      cursor:pointer;
+      border-radius: 20px;
+      padding: 18px 16px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(124,255,183,.35);
+      color: rgba(255,255,255,.88);
+      font-weight: 800;
+      font-size: 34px;
+      text-align:center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    /* запрет на выделение/контекст/лупу */
-    body{ -webkit-touch-callout:none; }
+    /* Запрет выделения текста внутри */
+    .no-select, .no-select *{
+      -webkit-user-select:none !important;
+      user-select:none !important;
+      -webkit-touch-callout:none !important;
+    }
   </style>
 </head>
 
-<body>
+<body class="no-select">
   <div class="wrap">
-    <div class="panel" id="panel">
-      <div class="topRow">
+    <div class="card">
+      <div class="top">
         <div class="pill">Cooler Tap</div>
         <div class="pill">v0.1</div>
       </div>
 
-      <div class="tapZone">
-        <div class="coinOuter" id="coinOuter">
-          <div class="rings"></div>
-
-          <!-- цельный коин -->
-          <div class="coinWhole" id="coinWhole">
-            <div class="coin">
-              <div class="coinFace">
-                <div class="logoWrap">
-                  <!-- USDT logo (SVG inline) -->
-                  <svg class="logo" viewBox="0 0 512 512" aria-hidden="true">
-                    <!-- green circle -->
-                    <defs>
-                      <radialGradient id="g1" cx="35%" cy="25%" r="70%">
-                        <stop offset="0%" stop-color="#2fe2a5"/>
-                        <stop offset="55%" stop-color="#1fbf86"/>
-                        <stop offset="100%" stop-color="#118d62"/>
-                      </radialGradient>
-                    </defs>
-                    <circle cx="256" cy="256" r="210" fill="url(#g1)"/>
-                    <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
-                    <!-- Tether T -->
-                    <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
-                  </svg>
-
-                  <!-- cracks -->
-                  <!-- crack 1 -->
-                  <svg class="crack crack1" viewBox="0 0 512 512">
-                    <path d="M265 110 L240 170 L280 220 L250 260 L290 310 L270 360 L300 410"
-                          stroke="rgba(255,255,255,.85)" stroke-width="6" fill="none"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M240 170 L210 210" stroke="rgba(255,255,255,.65)" stroke-width="4" fill="none"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-
-                  <!-- crack 2 -->
-                  <svg class="crack crack2" viewBox="0 0 512 512">
-                    <path d="M150 240 L210 250 L260 230 L320 250 L360 240"
-                          stroke="rgba(255,255,255,.75)" stroke-width="5" fill="none"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-
-                  <!-- crack 3 -->
-                  <svg class="crack crack3" viewBox="0 0 512 512">
-                    <path d="M190 320 L230 300 L270 320 L310 300 L350 320"
-                          stroke="rgba(255,255,255,.7)" stroke-width="5" fill="none"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-
-                  <!-- crack 4 -->
-                  <svg class="crack crack4" viewBox="0 0 512 512">
-                    <path d="M210 140 L230 200 L210 250 L230 310 L210 360"
-                          stroke="rgba(255,255,255,.7)" stroke-width="5" fill="none"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- раскол: две половины -->
-          <div class="coinHalves" id="coinHalves" aria-hidden="true">
-            <div class="half left">
-              <div class="coin">
-                <div class="coinFace">
-                  <div class="logoWrap">
-                    <!-- тот же логотип -->
-                    <svg class="logo" viewBox="0 0 512 512">
-                      <defs>
-                        <radialGradient id="g1b" cx="35%" cy="25%" r="70%">
-                          <stop offset="0%" stop-color="#2fe2a5"/>
-                          <stop offset="55%" stop-color="#1fbf86"/>
-                          <stop offset="100%" stop-color="#118d62"/>
-                        </radialGradient>
-                      </defs>
-                      <circle cx="256" cy="256" r="210" fill="url(#g1b)"/>
-                      <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
-                      <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="half right">
-              <div class="coin">
-                <div class="coinFace">
-                  <div class="logoWrap">
-                    <svg class="logo" viewBox="0 0 512 512">
-                      <defs>
-                        <radialGradient id="g1c" cx="35%" cy="25%" r="70%">
-                          <stop offset="0%" stop-color="#2fe2a5"/>
-                          <stop offset="55%" stop-color="#1fbf86"/>
-                          <stop offset="100%" stop-color="#118d62"/>
-                        </radialGradient>
-                      </defs>
-                      <circle cx="256" cy="256" r="210" fill="url(#g1c)"/>
-                      <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
-                      <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ловим тап -->
-          <div class="tapLayer" id="tapLayer"></div>
+      <div class="tap-area">
+        <div class="rings">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="ring r4"></div>
         </div>
-      </div>
 
-      <div class="bottomCard">
-        <div class="score" id="score">0000</div>
-        <div class="subline" id="subline">Тапай по значку USDT ☝️</div>
-        <button class="btn" type="button" id="claim">Забрать награды</button>
+        <div class="coin-wrap">
+          <div id="coin" class="coin" aria-label="USDT">
+            <div class="coin-inner">
+              <!-- НОРМАЛЬНЫЙ значок USDT -->
+              <svg class="usdt" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g fill="#ffffff">
+                  <!-- верхняя "Т" -->
+                  <path d="M57 58h142v28H145v20c34 2 58 10 58 20s-24 18-58 20v54h-34v-54c-34-2-58-10-58-20s24-18 58-20V86H57V58z"/>
+                  <!-- эллипс -->
+                  <path d="M128 122c-46 0-83-9-83-20s37-20 83-20 83 9 83 20-37 20-83 20zm0-12c31 0 56-5 56-8s-25-8-56-8-56 5-56 8 25 8 56 8z"/>
+                </g>
+              </svg>
+
+              <!-- Трещины -->
+              <div class="cracks">
+                <!-- 10 тапов: 1 трещина -->
+                <div id="crack1" class="crack">
+                  <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M62 18 L52 36 L66 44 L54 60 L72 72 L60 92" />
+                  </svg>
+                </div>
+
+                <!-- 20 тапов: ещё 3 трещины -->
+                <div id="crack2" class="crack">
+                  <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M28 30 L42 40 L36 54 L48 64 L40 84" />
+                  </svg>
+                </div>
+                <div id="crack3" class="crack">
+                  <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M84 32 L70 44 L78 58 L64 70 L72 88" />
+                  </svg>
+                </div>
+                <div id="crack4" class="crack">
+                  <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M54 20 L56 34 L44 46 L58 54 L50 74 L58 92" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Осколки -->
+              <div class="shards" id="shards">
+                <div class="shard" style="--x:-80px;--y:-40px;--r:-25deg;"></div>
+                <div class="shard" style="--x:90px;--y:-30px;--r:40deg;"></div>
+                <div class="shard" style="--x:-70px;--y:65px;--r:15deg;"></div>
+                <div class="shard" style="--x:75px;--y:75px;--r:-10deg;"></div>
+                <div class="shard" style="--x:0px;--y:-95px;--r:5deg;"></div>
+                <div class="shard" style="--x:0px;--y:105px;--r:-35deg;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div id="score" class="score">0000</div>
+          <div id="hint" class="hint">Тапай по значку <b>USDT</b> ☝️</div>
+          <div class="btn">Забрать награды</div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Telegram init
-    try{
-      if (window.Telegram && Telegram.WebApp){
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-      }
-    }catch(e){}
-
-    // анти-выделение/контекст
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('selectstart', (e) => e.preventDefault());
-
-    // анти-zoom (iOS)
+    // Запрет жестов iOS (пинч/зум)
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('gesturechange', (e) => e.preventDefault());
     document.addEventListener('gestureend', (e) => e.preventDefault());
+
+    // Убираем контекстное меню (долгое нажатие)
+    window.addEventListener('contextmenu', (e) => e.preventDefault(), { passive: false });
+
+    // Убираем "двойной тап -> зум" максимально
     let lastTouchEnd = 0;
-    document.addEventListener('touchend', (e) => {
+    document.addEventListener('touchend', function (e) {
       const now = Date.now();
-      if (now - lastTouchEnd <= 300) e.preventDefault();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
       lastTouchEnd = now;
-    }, {passive:false});
-    document.addEventListener('dblclick', (e) => e.preventDefault(), {passive:false});
+    }, { passive: false });
 
-    const panel = document.getElementById('panel');
-    const tapLayer = document.getElementById('tapLayer');
+    const coin = document.getElementById('coin');
     const scoreEl = document.getElementById('score');
-    const subline = document.getElementById('subline');
+    const hintEl = document.getElementById('hint');
 
-    // ВАЖНО: табло всегда с нуля при первом входе
+    const crack1 = document.getElementById('crack1');
+    const crack2 = document.getElementById('crack2');
+    const crack3 = document.getElementById('crack3');
+    const crack4 = document.getElementById('crack4');
+
     let taps = 0;
     let broken = false;
 
-    function setScoreUSDT(amount){
-      // 50 => "0050"
-      scoreEl.textContent = String(amount).padStart(4,'0');
-      subline.textContent = amount + " USDT";
+    function pad4(n){
+      return String(n).padStart(4,'0');
     }
 
-    function setScoreZero(){
-      scoreEl.textContent = "0000";
-      subline.textContent = "Тапай по значку USDT ☝️";
+    function haptic(ms=10){
+      // На iOS Safari вибрации нет, но на некоторых Android/Telegram работает
+      if (navigator.vibrate) navigator.vibrate(ms);
     }
 
-    setScoreZero();
-
-    function haptic(){
-      // В Telegram будет, в iPhone браузере почти нет
-      try{
-        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
-          Telegram.WebApp.HapticFeedback.impactOccurred('light');
-          return;
-        }
-      }catch(e){}
-      if (navigator.vibrate) navigator.vibrate(10);
+    function pressAnim(){
+      coin.animate(
+        [
+          { transform: 'translateZ(0) scale(1)' },
+          { transform: 'translateZ(0) scale(0.97)' },
+          { transform: 'translateZ(0) scale(1)' }
+        ],
+        { duration: 130, easing: 'ease-out' }
+      );
     }
 
-    function applyStage(){
-      // stage 0: 0-9
-      // stage 1: 10-19
-      // stage 2: 20-29
-      // stage 3: 30+ => broken
-      panel.classList.remove('stage1','stage2','broken');
+    function updateCracks(){
+      // 10 тапов -> 1 трещина
+      crack1.style.opacity = (taps >= 10 && !broken) ? '1' : '0';
 
-      if (broken) {
-        panel.classList.add('broken');
-        return;
-      }
-
-      if (taps >= 20) panel.classList.add('stage2');
-      else if (taps >= 10) panel.classList.add('stage1');
+      // 20 тапов -> ещё 3 трещины
+      const on20 = (taps >= 20 && !broken) ? '1' : '0';
+      crack2.style.opacity = on20;
+      crack3.style.opacity = on20;
+      crack4.style.opacity = on20;
     }
 
-    let pressTimer = null;
-    function pressFx(){
-      panel.classList.add('pressed');
-      if (pressTimer) clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => panel.classList.remove('pressed'), 80);
+    function breakCoin(){
+      broken = true;
+      coin.classList.add('broken');
+      // показать "50" на табло
+      scoreEl.textContent = pad4(50);
+      hintEl.textContent = 'Награда: 50 USDT ✅';
+      // чуть сильнее вибро
+      haptic(30);
+
+      // после анимации осколков можно зафиксировать вид (или оставить как есть)
+      setTimeout(() => {
+        // Оставляем трещины как часть эффекта "разбился"
+        crack1.style.opacity = '1';
+        crack2.style.opacity = '1';
+        crack3.style.opacity = '1';
+        crack4.style.opacity = '1';
+      }, 200);
     }
 
-    function onTap(e){
+    function handleTap(e){
       e.preventDefault();
+      e.stopPropagation();
+
       if (broken) return;
 
       taps += 1;
-      pressFx();
-      haptic();
+      // Счётчик показывает каждый клик
+      scoreEl.textContent = pad4(taps);
 
-      // На табло до раскола оставляем 0000 (как ты хотел) — показываем только на 30-м
+      // легкая вибрация на каждый тап
+      haptic(10);
+
+      // анимация "нажатия"
+      pressAnim();
+
+      updateCracks();
+
+      // 30 тапов => разбить и показать 50
       if (taps >= 30){
-        broken = true;
-        applyStage();
-        setScoreUSDT(50);
-
-        // чуть сильнее вибро на финале
-        try{
-          if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
-            Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-          }
-        }catch(e){}
-        return;
+        breakCoin();
       }
-
-      applyStage();
     }
 
-    tapLayer.addEventListener('touchstart', onTap, {passive:false});
-    tapLayer.addEventListener('pointerdown', onTap, {passive:false});
-    tapLayer.addEventListener('mousedown', onTap);
+    // Только тап по значку
+    coin.addEventListener('click', handleTap, { passive: false });
+    coin.addEventListener('touchstart', handleTap, { passive: false });
 
-    document.getElementById('claim').addEventListener('click', (e) => {
-      e.preventDefault();
-      if (!broken){
-        alert('Сначала разбей USDT значок 😉');
-      } else {
-        alert('Награда: 50 USDT (демо)');
-      }
-    });
+    // Старт всегда с нулей (важно!)
+    scoreEl.textContent = pad4(0);
   </script>
 </body>
 </html>
