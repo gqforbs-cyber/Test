@@ -24,43 +24,36 @@ body {
 
 .logo {
   position: absolute;
-  top: 40px;
-  font-size: 22px;
-  color: #ffffffaa;
+  top: 80px;
+  font-size: 28px;
+  color: #ffffffcc;
 }
 
 .coin-wrapper {
+  position: relative;
   margin-bottom: 60px;
 }
 
-.coin {
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle at 30% 30%, #27d17f, #0f9d58);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-shadow: 0 0 40px #00ff88aa;
+.coin-img {
+  width: 260px;
+  display: block;
+  margin: 0 auto;
   transition: transform 0.1s ease;
 }
 
-.coin:active {
+.coin-img:active {
   transform: scale(0.95);
-}
-
-.usdt-symbol {
-  font-size: 90px;
-  color: white;
-  font-weight: bold;
 }
 
 .cracks {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 260px;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .crack {
