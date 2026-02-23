@@ -1,28 +1,24 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-  />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Tether Tap</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
 
+  <!-- важное: ?v=2 чтобы точно обновилось -->
+  <link rel="stylesheet" href="style.css?v=2" />
+</head>
 <body>
-  <main class="screen" id="app">
+  <div class="screen">
     <div class="title">Tether Tap</div>
 
-    <section class="tap-area" aria-label="Tap area">
-      <button id="coinBtn" class="coin-wrap" aria-label="Tap coin">
-        <div id="coin" class="coin coin-stage-0"></div>
-      </button>
+    <!-- НИКАКИХ колец/рамок тут нет -->
+    <div id="coin" class="coin" aria-label="USDT"></div>
 
-      <div class="counter" id="counter">0000</div>
-    </section>
-  </main>
+    <div id="counter" class="counter">0000</div>
+  </div>
 
-  <script src="script.js"></script>
+  <!-- важное: ?v=2 чтобы точно обновилось -->
+  <script src="script.js?v=2"></script>
 </body>
 </html>
