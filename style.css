@@ -1,88 +1,88 @@
-* {
-  box-sizing: border-box;
+*{
+  box-sizing:border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
+html,body{
+  height:100%;
+  margin:0;
+  padding:0;
+
+  /* запрет выделения/лупы/копирования */
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+
+  /* запрет зума/двойного тапа */
   touch-action: manipulation;
-  overflow: hidden;
+
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-
-  /* туманный глянцевый фон */
+/* туманный глянцевый фон */
+body{
   background:
     radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 40%),
-    radial-gradient(circle at 50% 100%, rgba(0,255,180,0.15), transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(0,255,180,0.14), transparent 55%),
     linear-gradient(180deg, #0e1e4f 0%, #091638 60%, #050b22 100%);
 }
 
-.screen {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 40px;
+.screen{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:48px;
 }
 
-/* ЗОЛОТОЙ заголовок */
-.title {
-  font-size: 48px;
-  font-weight: 400;
+/* золотая надпись */
+.title{
+  font-size:48px;
+  font-weight:400;
+  margin-bottom:34px;
+
   background: linear-gradient(90deg, #f7e6a3, #ffd86a, #f7e6a3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
   text-shadow:
-    0 0 10px rgba(255,215,120,0.4),
-    0 0 25px rgba(255,215,120,0.25);
-  margin-bottom: 40px;
+    0 0 10px rgba(255,215,120,0.35),
+    0 0 25px rgba(255,215,120,0.22);
 }
 
-/* УБРАЛИ круг вокруг монеты */
-.coin-wrap {
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-}
+/* монета БЕЗ круга */
+.coin{
+  width:min(70vw, 340px);
+  height:min(70vw, 340px);
+  border-radius:28px;
 
-.coin {
-  width: min(70vw, 340px);
-  height: min(70vw, 340px);
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-
-  background-image: url("992437D4-0702-498F-9094-DB45594481F4.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-image:url("992437D4-0702-498F-9094-DB45594481F4.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
 
   /* мягкое свечение */
   filter: drop-shadow(0 25px 60px rgba(0,255,180,0.35));
+
+  /* убираем любые артефакты выделения */
+  outline:none;
 }
 
-/* эффект нажатия */
-.coin-press {
-  transform: scale(0.96);
-  transition: transform 0.1s ease;
+/* анимация нажатия */
+.coin.pressed{
+  transform: scale(0.97);
+  transition: transform 0.08s ease;
 }
 
-/* СЧЕТЧИК */
-.counter {
-  margin-top: 60px;
-  font-size: 100px;
-  font-weight: 300;
-  letter-spacing: 12px;
-  color: #7bffd7;
+/* счетчик */
+.counter{
+  margin-top:44px;
+  font-size:110px;
+  font-weight:300;
+  letter-spacing:12px;
+  color:#7bffd7;
   text-shadow:
-    0 0 20px rgba(0,255,200,0.5),
-    0 0 60px rgba(0,255,200,0.25);
+    0 0 18px rgba(0,255,200,0.45),
+    0 0 55px rgba(0,255,200,0.25);
 }
