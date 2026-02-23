@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cooler Tap</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cooler Tap</title>
+
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
-        <h1>Tether Tap</h1>
-        <div class="tap-area">
-            <button id="tapButton" class="tap-button">
-                <img src="tether-icon.png" alt="Tether" />
-            </button>
-            <div id="cracks" class="cracks"></div>
-        </div>
-        <h2 id="count">0000</h2>
-        <button id="rewardButton" style="display: none;"></button>
+
+<div class="app">
+
+  <div class="logo">Cooler Tap</div>
+
+  <div class="coin-wrapper">
+    <div class="coin" id="coin">
+      <div class="usdt-symbol">₮</div>
+      <div class="cracks" id="cracks"></div>
     </div>
-    <script src="script.js"></script>
+  </div>
+
+  <div class="counter" id="counter">0000</div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
