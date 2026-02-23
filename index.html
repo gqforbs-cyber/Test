@@ -1,32 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tether Tap</title>
-
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  />
+  <title>Tether Tap</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+  <main class="screen" id="app">
+    <div class="title">Tether Tap</div>
 
-<div class="app">
+    <section class="tap-area" aria-label="Tap area">
+      <button id="coinBtn" class="coin-wrap" aria-label="Tap coin">
+        <div id="coin" class="coin coin-stage-0"></div>
+      </button>
 
-  <div class="logo">Tether Tap</div>
+      <div class="counter" id="counter">0000</div>
+    </section>
+  </main>
 
-  <div class="coin-wrapper">
-    <img 
-      src="A706A502-B529-485C-9177-6F482561B1D6.png" 
-      class="coin-img" 
-      id="coin"
-      draggable="false"
-    >
-    <div class="cracks" id="cracks"></div>
-  </div>
-
-  <div class="counter" id="counter">0000</div>
-
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
