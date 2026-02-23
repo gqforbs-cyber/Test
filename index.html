@@ -2,27 +2,14 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-  />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Cooler Tap</title>
 
-  <style>
-    :root{
-      --bg1:#0b1d44;
-      --bg2:#140b3a;
-      --stroke:#ffffff22;
-      --text:#e9f1ff;
-      --muted:#b8c7ea99;
-      --mint:#7dffb5;
-      --btn:#0f1a2a88;
-      --btnStroke:#7dffb533;
-    }
+  <!-- Telegram WebApp API (для Haptic в Telegram) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    /* ❗️Жёстко запрещаем выделение/копирование/лупу */
+  <style>
     html, body, *{
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
@@ -30,15 +17,14 @@
       user-select: none;
       -webkit-text-size-adjust: 100%;
     }
-
     html, body{
       height:100%;
       margin:0;
-      background: radial-gradient(1200px 900px at 50% 15%, #1c3f87 0%, var(--bg1) 35%, var(--bg2) 100%);
-      color:var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
       overflow:hidden;
       touch-action: manipulation; /* анти-zoom */
+      background: radial-gradient(1200px 900px at 50% 15%, #1c3f87 0%, #0b1d44 35%, #140b3a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+      color:#e9f1ff;
     }
 
     .wrap{
@@ -55,10 +41,10 @@
       height:min(860px, 92vh);
       border-radius:34px;
       background: linear-gradient(180deg, #3b6bb344 0%, #1a2a5a55 40%, #1a0e3a66 100%);
-      border:1px solid var(--stroke);
+      border:1px solid #ffffff22;
       box-shadow: 0 30px 80px #00000066;
       position:relative;
-      padding:18px 18px 20px;
+      padding:18px;
       box-sizing:border-box;
       overflow:hidden;
     }
@@ -69,40 +55,40 @@
       gap:12px;
       margin-bottom:14px;
     }
-
     .pill{
       padding:10px 14px;
       border-radius:999px;
-      border:1px solid var(--stroke);
-      background: #ffffff10;
+      border:1px solid #ffffff22;
+      background:#ffffff10;
       font-weight:600;
-      letter-spacing:.3px;
       color:#d8e6ff;
     }
 
-    .fanZone{
+    .tapZone{
       margin-top:10px;
       display:flex;
       align-items:center;
       justify-content:center;
+      height: calc(100% - 250px); /* оставляем место под нижнюю карточку */
     }
 
-    .fanOuter{
+    .coinOuter{
       width:min(340px, 72vw);
       aspect-ratio:1/1;
       border-radius:50%;
       border:1px solid #ffffff22;
       background:
-        radial-gradient(circle at 50% 50%, #ffffff14 0%, #ffffff07 42%, transparent 72%),
+        radial-gradient(circle at 50% 50%, #ffffff12 0%, #ffffff07 45%, transparent 72%),
         radial-gradient(circle at 50% 45%, #00000025 0%, transparent 60%);
       position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
       overflow:hidden;
+      transform: translateZ(0);
     }
 
-    .fanRings{
+    .rings{
       position:absolute;
       inset:0;
       border-radius:50%;
@@ -112,156 +98,138 @@
       opacity:.9;
     }
 
-    /* ✅ 16 лопастей */
-    .fan{
+    /* ====== USDT coin ====== */
+    .coin{
       width:78%;
       aspect-ratio:1/1;
       border-radius:50%;
       position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.35) 0%, rgba(255,255,255,.06) 35%, rgba(0,0,0,.10) 100%),
+        radial-gradient(circle at 50% 55%, rgba(0,0,0,.18) 0%, transparent 60%);
+      box-shadow: 0 18px 40px #00000055;
+      border: 1px solid rgba(255,255,255,.22);
       transform: translateZ(0);
       will-change: transform;
-
-      animation-name: spin;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      animation-duration: 10s; /* будет меняться JS-ом */
-
-      background:
-        radial-gradient(circle at 50% 50%, #ffffff18 0%, #ffffff08 38%, transparent 64%),
-        radial-gradient(circle at 35% 35%, #ffffff22 0%, transparent 52%),
-        conic-gradient(
-          from 0deg,
-          rgba(255,255,255,.00) 0deg 6deg,
-          rgba(255,255,255,.28) 6deg 12deg,
-          rgba(255,255,255,.00) 12deg 22.5deg,
-
-          rgba(255,255,255,.00) 22.5deg 28.5deg,
-          rgba(255,255,255,.28) 28.5deg 34.5deg,
-          rgba(255,255,255,.00) 34.5deg 45deg,
-
-          rgba(255,255,255,.00) 45deg 51deg,
-          rgba(255,255,255,.28) 51deg 57deg,
-          rgba(255,255,255,.00) 57deg 67.5deg,
-
-          rgba(255,255,255,.00) 67.5deg 73.5deg,
-          rgba(255,255,255,.28) 73.5deg 79.5deg,
-          rgba(255,255,255,.00) 79.5deg 90deg,
-
-          rgba(255,255,255,.00) 90deg 96deg,
-          rgba(255,255,255,.28) 96deg 102deg,
-          rgba(255,255,255,.00) 102deg 112.5deg,
-
-          rgba(255,255,255,.00) 112.5deg 118.5deg,
-          rgba(255,255,255,.28) 118.5deg 124.5deg,
-          rgba(255,255,255,.00) 124.5deg 135deg,
-
-          rgba(255,255,255,.00) 135deg 141deg,
-          rgba(255,255,255,.28) 141deg 147deg,
-          rgba(255,255,255,.00) 147deg 157.5deg,
-
-          rgba(255,255,255,.00) 157.5deg 163.5deg,
-          rgba(255,255,255,.28) 163.5deg 169.5deg,
-          rgba(255,255,255,.00) 169.5deg 180deg,
-
-          rgba(255,255,255,.00) 180deg 186deg,
-          rgba(255,255,255,.28) 186deg 192deg,
-          rgba(255,255,255,.00) 192deg 202.5deg,
-
-          rgba(255,255,255,.00) 202.5deg 208.5deg,
-          rgba(255,255,255,.28) 208.5deg 214.5deg,
-          rgba(255,255,255,.00) 214.5deg 225deg,
-
-          rgba(255,255,255,.00) 225deg 231deg,
-          rgba(255,255,255,.28) 231deg 237deg,
-          rgba(255,255,255,.00) 237deg 247.5deg,
-
-          rgba(255,255,255,.00) 247.5deg 253.5deg,
-          rgba(255,255,255,.28) 253.5deg 259.5deg,
-          rgba(255,255,255,.00) 259.5deg 270deg,
-
-          rgba(255,255,255,.00) 270deg 276deg,
-          rgba(255,255,255,.28) 276deg 282deg,
-          rgba(255,255,255,.00) 282deg 292.5deg,
-
-          rgba(255,255,255,.00) 292.5deg 298.5deg,
-          rgba(255,255,255,.28) 298.5deg 304.5deg,
-          rgba(255,255,255,.00) 304.5deg 315deg,
-
-          rgba(255,255,255,.00) 315deg 321deg,
-          rgba(255,255,255,.28) 321deg 327deg,
-          rgba(255,255,255,.00) 327deg 337.5deg,
-
-          rgba(255,255,255,.00) 337.5deg 343.5deg,
-          rgba(255,255,255,.28) 343.5deg 349.5deg,
-          rgba(255,255,255,.00) 349.5deg 360deg
-        );
-
-      filter: drop-shadow(0 14px 26px #00000055) contrast(1.1);
-      opacity:1;
     }
 
-    .fan::after{
-      content:"";
-      position:absolute;
-      inset:0;
+    .coinFace{
+      width:88%;
+      height:88%;
       border-radius:50%;
-      background: radial-gradient(circle at 35% 30%, #ffffff1d 0%, transparent 45%);
-      pointer-events:none;
-      mix-blend-mode: screen;
-      opacity:.95;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      background: radial-gradient(circle at 50% 40%, rgba(0,0,0,.08) 0%, rgba(0,0,0,.30) 78%);
     }
 
-    .hub{
-      position:absolute;
-      left:50%;
-      top:50%;
-      width:28%;
-      height:28%;
-      transform: translate(-50%, -50%);
-      border-radius:50%;
-      background: radial-gradient(circle at 35% 35%, #ffffff2a 0%, #ffffff10 55%, #00000022 100%);
-      border:1px solid #ffffff22;
-      pointer-events:none;
+    /* SVG logo container */
+    .logoWrap{
+      width:74%;
+      height:74%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      transform: translateZ(0);
     }
 
-    .hub2{
-      position:absolute;
-      left:50%;
-      top:50%;
-      width:12%;
-      height:12%;
-      transform: translate(-50%, -50%);
-      border-radius:50%;
-      background: radial-gradient(circle at 40% 40%, #ffffff30 0%, #ffffff10 55%, #00000022 100%);
-      border:1px solid #ffffff1f;
-      pointer-events:none;
+    .logo{
+      width:100%;
+      height:100%;
+      display:block;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
     }
 
-    @keyframes spin{
-      to{ transform: rotate(360deg); }
-    }
-
-    /* ✅ слой для тапов поверх всего вентилятора */
+    /* Tap layer (невидимый, чтобы идеально ловить тап) */
     .tapLayer{
       position:absolute;
-      inset:-18%; /* чуть шире, чтобы попадать легче */
+      inset:-18%;
       border-radius:50%;
-      z-index:10;
-      background: transparent;
-      cursor:pointer;
+      z-index:20;
+      background:transparent;
       touch-action: manipulation;
     }
 
+    /* Нажатие */
+    .pressed .coin{
+      transform: scale(0.985);
+    }
+
+    /* ====== cracks overlays ====== */
+    .crack{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity .18s ease;
+      mix-blend-mode: screen;
+    }
+
+    /* 1 трещина */
+    .stage1 .crack1{ opacity: 0.95; }
+
+    /* ещё 3 трещины */
+    .stage2 .crack1,
+    .stage2 .crack2,
+    .stage2 .crack3,
+    .stage2 .crack4{ opacity: 0.95; }
+
+    /* ====== break animation ====== */
+    .broken .coinWhole{ opacity:0; transform: scale(0.98); }
+    .coinWhole{ transition: opacity .16s ease, transform .16s ease; }
+
+    .coinHalves{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      pointer-events:none;
+    }
+    .broken .coinHalves{ opacity:1; }
+
+    .half{
+      position:absolute;
+      top:0; bottom:0;
+      width:50%;
+      overflow:hidden;
+      transform: translateZ(0);
+      will-change: transform;
+    }
+    .half.left{ left:0; }
+    .half.right{ right:0; }
+
+    .half .coin, .half .coinFace, .half .logoWrap, .half .logo{
+      width:200%;
+      height:100%;
+    }
+    .half.left .coin{ transform-origin: 100% 50%; }
+    .half.right .coin{ transform-origin: 0% 50%; }
+
+    .half.left .coin{ transform: translateX(0); }
+    .half.right .coin{ transform: translateX(-50%); }
+
+    @keyframes splitLeft{
+      to{ transform: translateX(-18px) rotate(-6deg); }
+    }
+    @keyframes splitRight{
+      to{ transform: translateX(18px) rotate(6deg); }
+    }
+    .broken .half.left{ animation: splitLeft .28s ease-out forwards; }
+    .broken .half.right{ animation: splitRight .28s ease-out forwards; }
+
+    /* ====== bottom card ====== */
     .bottomCard{
       position:absolute;
-      left:18px;
-      right:18px;
-      bottom:20px;
+      left:18px; right:18px; bottom:20px;
       border-radius:26px;
-      border:1px solid var(--stroke);
+      border:1px solid #ffffff22;
       background: linear-gradient(180deg, #0b1327aa 0%, #120b33bb 100%);
-      padding:18px 18px 16px;
-      box-shadow: inset 0 0 0 1px #00000022;
+      padding:18px 18px 14px;
     }
 
     .score{
@@ -270,64 +238,166 @@
       font-weight:800;
       letter-spacing:6px;
       text-align:center;
-      color:var(--mint);
+      color:#7dffb5;
       text-shadow: 0 0 18px #7dffb540;
-      margin:4px 0 10px;
+      margin:4px 0 6px;
     }
 
-    .hint{
+    .subline{
       text-align:center;
-      color:var(--muted);
-      font-size:18px;
-      margin-bottom:14px;
+      color:#b8c7ea99;
+      font-size:16px;
+      margin-bottom:12px;
+      min-height: 20px;
     }
 
     .btn{
       width:100%;
       border-radius:18px;
       padding:16px 16px;
-      background: var(--btn);
-      border:1px solid var(--btnStroke);
+      background:#0f1a2a88;
+      border:1px solid #7dffb533;
       color:#eaf4ff;
       font-size:26px;
       font-weight:800;
-      letter-spacing:.3px;
       cursor:pointer;
-      display:block;
     }
+
+    /* запрет на выделение/контекст/лупу */
+    body{ -webkit-touch-callout:none; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="panel">
+    <div class="panel" id="panel">
       <div class="topRow">
         <div class="pill">Cooler Tap</div>
         <div class="pill">v0.1</div>
       </div>
 
-      <div class="fanZone">
-        <div class="fanOuter" id="fanOuter">
-          <div class="fanRings"></div>
+      <div class="tapZone">
+        <div class="coinOuter" id="coinOuter">
+          <div class="rings"></div>
 
-          <div class="fan" id="fan">
-            <div class="tapLayer" id="tapLayer"></div>
-            <div class="hub"></div>
-            <div class="hub2"></div>
+          <!-- цельный коин -->
+          <div class="coinWhole" id="coinWhole">
+            <div class="coin">
+              <div class="coinFace">
+                <div class="logoWrap">
+                  <!-- USDT logo (SVG inline) -->
+                  <svg class="logo" viewBox="0 0 512 512" aria-hidden="true">
+                    <!-- green circle -->
+                    <defs>
+                      <radialGradient id="g1" cx="35%" cy="25%" r="70%">
+                        <stop offset="0%" stop-color="#2fe2a5"/>
+                        <stop offset="55%" stop-color="#1fbf86"/>
+                        <stop offset="100%" stop-color="#118d62"/>
+                      </radialGradient>
+                    </defs>
+                    <circle cx="256" cy="256" r="210" fill="url(#g1)"/>
+                    <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
+                    <!-- Tether T -->
+                    <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
+                  </svg>
+
+                  <!-- cracks -->
+                  <!-- crack 1 -->
+                  <svg class="crack crack1" viewBox="0 0 512 512">
+                    <path d="M265 110 L240 170 L280 220 L250 260 L290 310 L270 360 L300 410"
+                          stroke="rgba(255,255,255,.85)" stroke-width="6" fill="none"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M240 170 L210 210" stroke="rgba(255,255,255,.65)" stroke-width="4" fill="none"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+
+                  <!-- crack 2 -->
+                  <svg class="crack crack2" viewBox="0 0 512 512">
+                    <path d="M150 240 L210 250 L260 230 L320 250 L360 240"
+                          stroke="rgba(255,255,255,.75)" stroke-width="5" fill="none"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+
+                  <!-- crack 3 -->
+                  <svg class="crack crack3" viewBox="0 0 512 512">
+                    <path d="M190 320 L230 300 L270 320 L310 300 L350 320"
+                          stroke="rgba(255,255,255,.7)" stroke-width="5" fill="none"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+
+                  <!-- crack 4 -->
+                  <svg class="crack crack4" viewBox="0 0 512 512">
+                    <path d="M210 140 L230 200 L210 250 L230 310 L210 360"
+                          stroke="rgba(255,255,255,.7)" stroke-width="5" fill="none"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- раскол: две половины -->
+          <div class="coinHalves" id="coinHalves" aria-hidden="true">
+            <div class="half left">
+              <div class="coin">
+                <div class="coinFace">
+                  <div class="logoWrap">
+                    <!-- тот же логотип -->
+                    <svg class="logo" viewBox="0 0 512 512">
+                      <defs>
+                        <radialGradient id="g1b" cx="35%" cy="25%" r="70%">
+                          <stop offset="0%" stop-color="#2fe2a5"/>
+                          <stop offset="55%" stop-color="#1fbf86"/>
+                          <stop offset="100%" stop-color="#118d62"/>
+                        </radialGradient>
+                      </defs>
+                      <circle cx="256" cy="256" r="210" fill="url(#g1b)"/>
+                      <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
+                      <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="half right">
+              <div class="coin">
+                <div class="coinFace">
+                  <div class="logoWrap">
+                    <svg class="logo" viewBox="0 0 512 512">
+                      <defs>
+                        <radialGradient id="g1c" cx="35%" cy="25%" r="70%">
+                          <stop offset="0%" stop-color="#2fe2a5"/>
+                          <stop offset="55%" stop-color="#1fbf86"/>
+                          <stop offset="100%" stop-color="#118d62"/>
+                        </radialGradient>
+                      </defs>
+                      <circle cx="256" cy="256" r="210" fill="url(#g1c)"/>
+                      <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="14"/>
+                      <path fill="#ffffff" d="M144 172h224v44h-86c2 14 3 28 3 42 57 6 95 23 95 43 0 27-76 49-170 49s-170-22-170-49c0-20 38-37 95-43 0-14 1-28 3-42h-86v-44zm112 44c-2 14-3 29-3 44 1 0 2 0 3 0s2 0 3 0c0-15-1-30-3-44h0zm0 74c-70 4-114 20-114 28 0 10 55 29 128 29s128-19 128-29c0-8-44-24-114-28-4 0-10 0-14 0s-10 0-14 0zm-54-74c-2 13-3 27-3 41 17-1 35-2 55-2s38 1 55 2c0-14-1-28-3-41H202zm36 0c2 13 3 27 3 41 5 0 10 0 15 0s10 0 15 0c0-14-1-28-3-41h-30z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ловим тап -->
+          <div class="tapLayer" id="tapLayer"></div>
         </div>
       </div>
 
       <div class="bottomCard">
         <div class="score" id="score">0000</div>
-        <div class="hint">Тапай по кругу вентилятора ☝️</div>
+        <div class="subline" id="subline">Тапай по значку USDT ☝️</div>
         <button class="btn" type="button" id="claim">Забрать награды</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ✅ Telegram init (важно для Haptic)
+    // Telegram init
     try{
       if (window.Telegram && Telegram.WebApp){
         Telegram.WebApp.ready();
@@ -335,68 +405,14 @@
       }
     }catch(e){}
 
-    // ✅ счёт всегда с нуля
-    let taps = 0;
-    const scoreEl = document.getElementById('score');
-    const tapLayer = document.getElementById('tapLayer');
-    const fan = document.getElementById('fan');
-
-    function renderScore(){
-      scoreEl.textContent = String(taps).padStart(4,'0');
-    }
-    renderScore();
-
-    // ✅ скорость: idle 10 сек/круг, tap 1 сек/круг
-    const IDLE_DUR = 10;
-    const TAP_DUR  = 1;
-    const BOOST_MS = 900;
-    let boostTimer = null;
-
-    function setSpin(seconds){
-      fan.style.animationDuration = seconds + 's'; // ❗️на iOS так надёжнее
-    }
-    setSpin(IDLE_DUR);
-
-    function boostSpin(){
-      setSpin(TAP_DUR);
-      if (boostTimer) clearTimeout(boostTimer);
-      boostTimer = setTimeout(() => setSpin(IDLE_DUR), BOOST_MS);
-    }
-
-    // ✅ вибрация (iPhone -> только Telegram Haptic)
-    function haptic(){
-      try{
-        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
-          Telegram.WebApp.HapticFeedback.impactOccurred('light');
-          return;
-        }
-      }catch(e){}
-      // запасной вариант (на iOS обычно не работает, но пусть будет)
-      if (navigator.vibrate) navigator.vibrate(15);
-    }
-
-    function onTap(e){
-      if (e) e.preventDefault();
-      taps += 1;
-      renderScore();
-      boostSpin();
-      haptic();
-    }
-
-    // ✅ ловим ВСЕ варианты тапа в webview
-    tapLayer.addEventListener('touchstart', onTap, {passive:false});
-    tapLayer.addEventListener('pointerdown', onTap, {passive:false});
-    tapLayer.addEventListener('mousedown', onTap);
-
-    // ✅ убрать меню копирования/выделения
+    // анти-выделение/контекст
     document.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('selectstart', (e) => e.preventDefault());
 
-    // ✅ убрать zoom (двойной тап / жесты)
+    // анти-zoom (iOS)
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('gesturechange', (e) => e.preventDefault());
     document.addEventListener('gestureend', (e) => e.preventDefault());
-
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
       const now = Date.now();
@@ -405,9 +421,99 @@
     }, {passive:false});
     document.addEventListener('dblclick', (e) => e.preventDefault(), {passive:false});
 
+    const panel = document.getElementById('panel');
+    const tapLayer = document.getElementById('tapLayer');
+    const scoreEl = document.getElementById('score');
+    const subline = document.getElementById('subline');
+
+    // ВАЖНО: табло всегда с нуля при первом входе
+    let taps = 0;
+    let broken = false;
+
+    function setScoreUSDT(amount){
+      // 50 => "0050"
+      scoreEl.textContent = String(amount).padStart(4,'0');
+      subline.textContent = amount + " USDT";
+    }
+
+    function setScoreZero(){
+      scoreEl.textContent = "0000";
+      subline.textContent = "Тапай по значку USDT ☝️";
+    }
+
+    setScoreZero();
+
+    function haptic(){
+      // В Telegram будет, в iPhone браузере почти нет
+      try{
+        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
+          Telegram.WebApp.HapticFeedback.impactOccurred('light');
+          return;
+        }
+      }catch(e){}
+      if (navigator.vibrate) navigator.vibrate(10);
+    }
+
+    function applyStage(){
+      // stage 0: 0-9
+      // stage 1: 10-19
+      // stage 2: 20-29
+      // stage 3: 30+ => broken
+      panel.classList.remove('stage1','stage2','broken');
+
+      if (broken) {
+        panel.classList.add('broken');
+        return;
+      }
+
+      if (taps >= 20) panel.classList.add('stage2');
+      else if (taps >= 10) panel.classList.add('stage1');
+    }
+
+    let pressTimer = null;
+    function pressFx(){
+      panel.classList.add('pressed');
+      if (pressTimer) clearTimeout(pressTimer);
+      pressTimer = setTimeout(() => panel.classList.remove('pressed'), 80);
+    }
+
+    function onTap(e){
+      e.preventDefault();
+      if (broken) return;
+
+      taps += 1;
+      pressFx();
+      haptic();
+
+      // На табло до раскола оставляем 0000 (как ты хотел) — показываем только на 30-м
+      if (taps >= 30){
+        broken = true;
+        applyStage();
+        setScoreUSDT(50);
+
+        // чуть сильнее вибро на финале
+        try{
+          if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback){
+            Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+          }
+        }catch(e){}
+        return;
+      }
+
+      applyStage();
+    }
+
+    tapLayer.addEventListener('touchstart', onTap, {passive:false});
+    tapLayer.addEventListener('pointerdown', onTap, {passive:false});
+    tapLayer.addEventListener('mousedown', onTap);
+
     document.getElementById('claim').addEventListener('click', (e) => {
       e.preventDefault();
-      alert('Скоро добавим награды 🙂');
+      if (!broken){
+        alert('Сначала разбей USDT значок 😉');
+      } else {
+        alert('Награда: 50 USDT (демо)');
+      }
     });
   </script>
 </body>
