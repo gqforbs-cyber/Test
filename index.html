@@ -1,34 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tether Tap</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org"></script>
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; color: #fff;
+            overflow: hidden; font-family: 'Courier New', monospace;
+        }
+
+        /* 1. ФОН: Мутный крипто-код на заднем плане */
+        .bg-code-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; /* Самый нижний слой */
+            opacity: 0.15; filter: blur(4px); /* Размытие */
+            color: #26a17b; font-size: 10px; line-height: 1.4;
+            pointer-events: none; word-break: break-all;
+            padding: 10px;
+        }
+
+        /* 2. ИНТЕРФЕЙС: Поверх фона */
+        .ui-wrapper {
+            position: relative; z-index: 10; /* Слой над фоном */
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100vh; text-align: center;
+        }
+
+        #score { font-size: 64px; color: #26a17b; margin: 0; font-weight: bold; }
+        .label { font-size: 14px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 40px; }
+
+        /* Кнопка Tether */
+        .tap-area { position: relative; }
+        #tapBtn {
+            width: 220px; height: 220px;
+            background: url('https://cryptologos.cc') no-repeat center;
+            background-size: contain;
+            cursor: pointer; transition: transform 0.05s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #tapBtn:active { transform: scale(0.94); }
+
+        /* 3. ПАРЯЩИЕ ЦИФРЫ: Под кнопкой */
+        .floating-plus {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            color: #26a17b; font-size: 30px; font-weight: bold;
+            pointer-events: none;
+            animation: moveDown 0.8s ease-out forwards;
+        }
+
+        @keyframes moveDown {
+            0% { top: 210px; opacity: 1; }
+            100% { top: 290px; opacity: 0; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Мутный фон с кодом -->
-    <div class="bg-overlay">
-        0x71C7656EC7ab88b098defB751B7401B5f6d8976F USDT_TRANSFER_SUCCESS BLOCK_HASH_000456123 
-        0x71C7656EC7ab88b098defB751B7401B5f6d8976F USDT_TRANSFER_SUCCESS BLOCK_HASH_000456123
-        0x71C7656EC7ab88b098defB751B7401B5f6d8976F USDT_TRANSFER_SUCCESS BLOCK_HASH_000456123
-    </div>
 
-    <div class="container">
-        <div class="score-container">
-            <span id="score">0</span>
-            <p>USDT COLLECTED</p>
-        </div>
+    <div class="bg-code-layer" id="bgText"></div>
 
-        <div class="button-area">
-            <div id="tapBtn" class="tether-logo"></div>
-            <!-- Сюда будут вылетать цифры -->
-            <div id="float-point"></div>
+    <div class="ui-wrapper">
+        <div id="score">0</div>
+        <div class="label">USDT COLLECTED</div>
+
+        <div class="tap-area">
+            <div id="tapBtn"></div>
+            <!-- Сюда вылетают цифры -->
         </div>
     </div>
 
-    <audio id="clickSound" src="https://www.soundjay.com"></audio>
-    <script src="script.js"></script>
+    <audio id="clickSnd" src="https://www.soundjay.com"></audio>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        const btn = document.getElementById('tapBtn');
+        const scoreEl = document.getElementById('score');
+        const bg = document.getElementById('bgText');
+        const audio = document.getElementById('clickSnd');
+
+        tg.expand();
+
+        // Наполнение фона текстом со скрина
+        const code = "C7656EC7ab88b098defB751B7401B5f6d8976F T_TRANSFER_SUCCESS CK_HASH_000456123 ";
+        bg.innerText = code.repeat(100);
+
+        let count = parseInt(localStorage.getItem('saved_val')) || 0;
+        scoreEl.innerText = count;
+
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            count++;
+            scoreEl.innerText = count;
+            localStorage.setItem('saved_val', count);
+
+            // Вибрация и звук
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            audio.currentTime = 0;
+            audio.play().catch(()=>{});
+
+            // Анимация +1 под кнопкой
+            const n = document.createElement('div');
+            n.className = 'floating-plus';
+            n.innerText = '+1';
+            document.querySelector('.tap-area').appendChild(n);
+            setTimeout(() => n.remove(), 800);
+        });
+    </script>
 </body>
 </html>
