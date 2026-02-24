@@ -1,86 +1,48 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    color: #fff;
-    font-family: 'Montserrat', sans-serif;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #000; color: #fff; overflow: hidden;
+    font-family: sans-serif;
 }
 
-/* Фон с кодом */
-#matrixCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    filter: blur(3px); /* Мутный эффект */
-    opacity: 0.2;
+/* Фон: слегка мутный крипто код */
+.bg-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    font-family: monospace; color: #26a17b; font-size: 14px;
+    opacity: 0.2; filter: blur(3px); /* Размытие */
+    padding: 10px; pointer-events: none; z-index: 1;
+    word-break: break-all;
 }
 
-.main-wrapper {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    width: 100%;
+.container {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; height: 100vh;
 }
 
-.header h1 {
-    font-size: 4rem;
-    margin: 0;
-    color: #26a17b;
-    text-shadow: 0 0 20px rgba(38, 161, 123, 0.8);
-}
+.score-container { text-align: center; margin-bottom: 40px; }
+#score { font-size: 60px; font-weight: bold; color: #26a17b; }
 
-.header p {
-    font-weight: bold;
-    letter-spacing: 3px;
-    font-size: 14px;
-    opacity: 0.6;
-}
-
-/* Кнопка */
-.coin {
-    width: 260px;
-    height: 260px;
-    margin: 40px auto;
-    border-radius: 50%;
-    background: radial-gradient(circle, #26a17b 0%, #1a6b52 100%);
-    box-shadow: 0 0 50px rgba(38, 161, 123, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.05s ease;
+/* Кнопка с логотипом */
+.tether-logo {
+    width: 200px; height: 200px;
+    background: url('https://cryptologos.cc') no-repeat center;
+    background-size: contain;
+    cursor: pointer; transition: transform 0.05s;
     -webkit-tap-highlight-color: transparent;
 }
 
-.coin img {
-    width: 80%;
-    pointer-events: none;
-}
-
-.coin:active {
-    transform: scale(0.93);
-}
+.tether-logo:active { transform: scale(0.95); }
 
 /* Парящие цифры ПОД кнопкой */
-.float-val {
-    position: absolute;
-    color: #26a17b;
-    font-size: 26px;
-    font-weight: 900;
-    pointer-events: none;
-    animation: dropDown 0.7s ease-out forwards;
+.floating-num {
+    position: absolute; color: #26a17b; font-size: 30px; font-weight: bold;
+    pointer-events: none; animation: floatAnim 0.8s ease-out forwards;
+    left: 50%; transform: translateX(-50%);
 }
 
-@keyframes dropDown {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(60px) scale(1.5); opacity: 0; }
+@keyframes floatAnim {
+    0% { top: 210px; opacity: 1; }
+    100% { top: 280px; opacity: 0; } /* Улетают вниз под кнопку */
 }
+
+.button-area { position: relative; }
