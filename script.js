@@ -1,53 +1,61 @@
 const tg = window.Telegram.WebApp;
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
 const btn = document.getElementById('tapBtn');
-const scoreDisplay = document.getElementById('score');
-const bgCode = document.getElementById('bgCode');
+const scoreEl = document.getElementById('score');
 const clickSound = document.getElementById('clickSound');
 
 tg.expand();
-tg.ready();
 
-let score = parseInt(localStorage.getItem('usdt_score')) || 0;
-scoreDisplay.innerText = score;
+let score = parseInt(localStorage.getItem('usdt_total')) || 0;
+scoreEl.innerText = score;
 
-// Заполнение фона "крипто-кодом"
-const codeText = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F USDT_TRANSFER_SUCCESS BLOCK_HASH_000456123 GAS_LIMIT_21000... ";
-bgCode.innerText = codeText.repeat(100);
+// --- АНИМАЦИЯ ФОНА (Крипто-код) ---
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Используем touchstart для скорости в мобильных приложениях
-btn.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // Предотвращает зум и лишние клики
-    
-    score++;
-    scoreDisplay.innerText = score;
-    localStorage.setItem('usdt_score', score);
+const codes = "01 USDT ETH 0x BTC 777".split(" ");
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
 
-    // Вибрация
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('medium');
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#26a17b";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = codes[Math.floor(Math.random() * codes.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
     }
+}
+setInterval(drawMatrix, 50);
 
-    // Звук
+// --- ЛОГИКА ТАПА ---
+btn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    score++;
+    scoreEl.innerText = score;
+    localStorage.setItem('usdt_total', score);
+
+    // Звук и Вибрация
     clickSound.currentTime = 0;
     clickSound.play().catch(() => {});
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
-    // Создаем парящую цифру
-    createFloat();
-});
-
-function createFloat() {
+    // Создание парящего числа ПОД кнопкой
     const float = document.createElement('div');
-    float.className = 'floating-number';
+    float.className = 'float-val';
     float.innerText = '+1';
     
-    // Позиционируем прямо под центром кнопки
-    float.style.left = "50%";
-    float.style.marginLeft = "-15px"; 
-    float.style.top = "200px";
+    // Центрируем под кнопкой
+    const rect = btn.getBoundingClientRect();
+    float.style.left = (rect.left + rect.width / 2 - 15) + 'px';
+    float.style.top = (rect.bottom - 20) + 'px';
 
-    document.querySelector('.tap-area').appendChild(float);
-
-    setTimeout(() => {
-        float.remove();
-    }, 1000);
-}
+    document.body.appendChild(float);
+    setTimeout(() => float.remove(), 700);
+});
