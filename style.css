@@ -1,88 +1,233 @@
-*{
-  box-sizing:border-box;
+/* ====== ЖЕСТКО УБИРАЕМ ВСЕ "выделение/копировать/лупа/зум" НА iOS ====== */
+* {
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;     /* запрет меню "копировать" */
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;      /* меньше шансов на zoom */
 }
 
-html,body{
-  height:100%;
-  margin:0;
-  padding:0;
-
-  /* запрет выделения/лупы/копирования */
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-touch-callout:none;
-
-  /* запрет зума/двойного тапа */
-  touch-action: manipulation;
-
-  overflow:hidden;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #071024;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* туманный глянцевый фон */
-body{
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 44px;
+  padding-left: 18px;
+  padding-right: 18px;
+  box-sizing: border-box;
+
+  /* Туманно-глянцевый фон */
   background:
-    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 40%),
-    radial-gradient(circle at 50% 85%, rgba(0,255,180,0.14), transparent 55%),
-    linear-gradient(180deg, #0e1e4f 0%, #091638 60%, #050b22 100%);
+    radial-gradient(900px 500px at 50% 20%, rgba(255,255,255,0.10), transparent 60%),
+    radial-gradient(700px 700px at 20% 70%, rgba(0, 255, 200, 0.10), transparent 55%),
+    radial-gradient(700px 700px at 80% 75%, rgba(255, 215, 120, 0.08), transparent 55%),
+    linear-gradient(180deg, #0b2b77 0%, #071c4c 45%, #041027 100%);
 }
 
-.screen{
-  height:100%;
+/* Заголовок золото */
+.title {
+  margin: 14px 0 26px 0;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: center;
+
+  color: #d7b46a;
+  text-shadow:
+    0 2px 18px rgba(215,180,106,0.22),
+    0 0 2px rgba(255,255,255,0.15);
+}
+
+/* Кнопка-тач зона без рамок */
+.tap-area {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Пластина "мрамор/глянец" под монетой */
+.marble-plate {
+  position: relative;
+  width: min(78vw, 420px);
+  aspect-ratio: 1 / 1;
+  border-radius: 26px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Мраморный эффект без картинки: несколько слоёв градиентов */
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05)),
+    radial-gradient(350px 260px at 35% 35%, rgba(255,255,255,0.20), transparent 65%),
+    radial-gradient(380px 320px at 70% 70%, rgba(0,255,200,0.08), transparent 60%),
+    linear-gradient(0deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+
+  box-shadow:
+    0 28px 80px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.18);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* лёгкий глянец */
+  overflow: hidden;
+}
+
+.marble-plate::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    repeating-linear-gradient(
+      120deg,
+      rgba(255,255,255,0.00) 0px,
+      rgba(255,255,255,0.00) 14px,
+      rgba(255,255,255,0.05) 16px,
+      rgba(255,255,255,0.00) 24px
+    );
+  transform: rotate(-10deg);
+  opacity: 0.35;
+  pointer-events:none;
+}
+
+/* Монета */
+.coin {
+  width: 72%;
+  height: auto;
+  display: block;
+  border-radius: 28px;
+  filter: drop-shadow(0 18px 36px rgba(0, 255, 200, 0.18));
+  transform: translateZ(0);
+}
+
+/* Нажатие: мягкое "вдавливание" */
+.tap-area:active .coin {
+  transform: scale(0.985);
+}
+
+/* ====== ТРЕЩИНЫ ====== */
+.cracks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.crack {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 160px;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 0 14px rgba(0,255,200,0.35);
+  transform-origin: bottom center;
+  border-radius: 10px;
+  opacity: 0;
+}
+
+/* позиции трещин (красиво расходятся) */
+.c1 { transform: translate(-50%, -10%) rotate(-18deg); height: 180px; }
+.c2 { transform: translate(-50%, -10%) rotate(22deg);  height: 165px; }
+.c3 { transform: translate(-50%, -10%) rotate(62deg);  height: 145px; }
+.c4 { transform: translate(-50%, -10%) rotate(-58deg); height: 150px; }
+
+.cracks.show10 { opacity: 1; }
+.cracks.show10 .c1 { opacity: 1; }
+
+.cracks.show20 { opacity: 1; }
+.cracks.show20 .c1, .cracks.show20 .c2, .cracks.show20 .c3, .cracks.show20 .c4 { opacity: 1; }
+
+/* ====== РАСКОЛ ====== */
+.shatter {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.shatter.active {
+  opacity: 1;
+}
+
+.shard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  height: 44%;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.20);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.shatter.active .shard { opacity: 1; }
+
+.s1 { animation: shard1 520ms ease forwards; }
+.s2 { animation: shard2 520ms ease forwards; }
+.s3 { animation: shard3 520ms ease forwards; }
+.s4 { animation: shard4 520ms ease forwards; }
+
+@keyframes shard1 { to { transform: translate(-140%, -130%) rotate(-16deg); opacity: 0; } }
+@keyframes shard2 { to { transform: translate(40%, -145%) rotate(22deg);   opacity: 0; } }
+@keyframes shard3 { to { transform: translate(-150%, 50%) rotate(10deg);   opacity: 0; } }
+@keyframes shard4 { to { transform: translate(60%, 60%) rotate(-18deg);    opacity: 0; } }
+
+/* ====== СЧЕТЧИК ====== */
+.counter-wrap{
+  width: 100%;
+  max-width: 520px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  padding-top:48px;
+  margin-top: 18px;
 }
 
-/* золотая надпись */
-.title{
-  font-size:48px;
-  font-weight:400;
-  margin-bottom:34px;
-
-  background: linear-gradient(90deg, #f7e6a3, #ffd86a, #f7e6a3);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-
+.counter {
+  font-size: 112px;
+  letter-spacing: 8px;
+  font-weight: 200;
+  color: #86ffd6;
   text-shadow:
-    0 0 10px rgba(255,215,120,0.35),
-    0 0 25px rgba(255,215,120,0.22);
+    0 0 26px rgba(0,255,200,0.22),
+    0 0 3px rgba(255,255,255,0.20);
+  line-height: 1;
 }
 
-/* монета БЕЗ круга */
-.coin{
-  width:min(70vw, 340px);
-  height:min(70vw, 340px);
-  border-radius:28px;
-
-  background-image:url("992437D4-0702-498F-9094-DB45594481F4.png");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:contain;
-
-  /* мягкое свечение */
-  filter: drop-shadow(0 25px 60px rgba(0,255,180,0.35));
-
-  /* убираем любые артефакты выделения */
-  outline:none;
+.reward {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: 600;
+  color: rgba(255, 215, 120, 0.0);
+  text-shadow: 0 0 18px rgba(255,215,120,0.22);
+  transform: translateY(6px);
+  transition: 240ms ease;
 }
 
-/* анимация нажатия */
-.coin.pressed{
-  transform: scale(0.97);
-  transition: transform 0.08s ease;
-}
-
-/* счетчик */
-.counter{
-  margin-top:44px;
-  font-size:110px;
-  font-weight:300;
-  letter-spacing:12px;
-  color:#7bffd7;
-  text-shadow:
-    0 0 18px rgba(0,255,200,0.45),
-    0 0 55px rgba(0,255,200,0.25);
+.reward.show {
+  color: rgba(255, 215, 120, 0.95);
+  transform: translateY(0px);
 }
