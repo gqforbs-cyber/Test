@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tether Tap</title>
+    <title>Tether Tap Elite</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org"></script>
 </head>
 <body>
-    <div class="crypto-bg" id="bgCode"></div>
+    <!-- Контейнер для мутного крипто-фона -->
+    <canvas id="matrixCanvas"></canvas>
 
-    <div class="app-container">
-        <div class="score-board">
+    <div class="main-wrapper">
+        <div class="header">
             <h1 id="score">0</h1>
             <p>USDT COLLECTED</p>
         </div>
 
-        <div class="tap-area">
-            <!-- SVG логотип Tether встроен прямо в код для надежности -->
-            <div id="tapBtn" class="tether-circle">
-                <svg viewBox="0 0 2000 2000" xmlns="http://www.w3.org">
-                    <path d="M1000 0c552.285 0 1000 447.715 1000 1000s-447.715 1000-1000 1000S0 1552.285 0 1000 447.715 0 1000 0z" fill="#26a17b""")/>>
-                    <path d="M1113.11 823.11V673.7h315.65V510.15H571.24v163.55h315.65v149.41c-300.94 13.91-525.75 64.91-525.75 125.7s224.81 111.79 525.75 125.7V1489.8h226.22V1074.5c300.94-13.91 525.75-64.91 525.75-125.7s-224.81-111.79-525.75-125.7zm0 216.51v-.5c-1.89.09-224.33 11.02-411.23-45.71v-.11c75.25 36.84 219.06 60.1 411.23 63.41v-17.09zm0-24.1v-.1c192.17-3.3 335.98-26.57 411.23-63.41v.11c-186.9 56.73-409.34 45.8-411.23 45.71v17.69z" fill="#fff""")/>>
-                </svg>
+        <div class="tap-container">
+            <div id="tapBtn" class="coin">
+                <img src="https://cryptologos.cc" alt="USDT">
             </div>
-            <div id="floatContainer"></div>
+            <!-- Сюда будут вылетать цифры -->
+            <div id="particles"></div>
         </div>
     </div>
 
