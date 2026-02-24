@@ -1,4 +1,3 @@
-// Telegram Haptic (если открыт как мини-приложение)
 const tg = window.Telegram?.WebApp;
 
 const tapArea = document.getElementById("tapArea");
@@ -10,57 +9,73 @@ const rewardEl = document.getElementById("reward");
 let taps = 0;
 let finished = false;
 
-// Всегда с нуля при первом открытии
 renderCounter(0);
 
-// Убираем двойной тап зум (iOS Safari) максимально
-let lastTouchEnd = 0;
-document.addEventListener("touchend", (e) => {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
-  lastTouchEnd = now;
-}, { passive: false });
+/* ВАЖНО:
+   Не трогаем document touchend — он ломает клики в iOS WebView.
+   Работаем через pointerdown/touchstart только на зоне тапа.
+*/
 
-// Запрет pinch zoom
-document.addEventListener("gesturestart", (e) => e.preventDefault(), { passive: false });
-document.addEventListener("gesturechange", (e) => e.preventDefault(), { passive: false });
-document.addEventListener("gestureend", (e) => e.preventDefault(), { passive: false });
+function doHapticLight(){
+  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+  if (navigator.vibrate) navigator.vibrate(18);
+}
 
-tapArea.addEventListener("click", () => {
+function doHapticSuccess(){
+  if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+  if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
+}
+
+function handleTap(){
   if (finished) return;
 
   taps += 1;
   renderCounter(taps);
+  doHapticLight();
 
-  // Вибрация/хаптик
-  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
-  if (navigator.vibrate) navigator.vibrate(18);
-
-  // Логика трещин: 10 / 20 / 30
   if (taps >= 10 && taps < 20) {
     cracksEl.className = "cracks show10";
   } else if (taps >= 20 && taps < 30) {
     cracksEl.className = "cracks show20";
   } else if (taps >= 30) {
-    // Раскол + награда
     finished = true;
-
-    cracksEl.className = "cracks show20"; // оставляем трещины
+    cracksEl.className = "cracks show20";
     shatterEl.classList.add("active");
 
-    // Показать 50 на табло
     setTimeout(() => {
       renderCounter(50);
       rewardEl.classList.add("show");
-      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-      if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
+      doHapticSuccess();
     }, 220);
   }
+}
+
+/* pointerdown — работает и в браузере, и в Telegram, и на iOS */
+tapArea.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  tapArea.classList.add("is-press");
+  handleTap();
 });
 
-function renderCounter(n) {
-  const s = String(n).padStart(4, "0");
-  counterEl.textContent = s;
+tapArea.addEventListener("pointerup", () => {
+  tapArea.classList.remove("is-press");
+});
+
+tapArea.addEventListener("pointercancel", () => {
+  tapArea.classList.remove("is-press");
+});
+
+/* запасной вариант для старых iOS */
+tapArea.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  tapArea.classList.add("is-press");
+  handleTap();
+}, { passive: false });
+
+tapArea.addEventListener("touchend", () => {
+  tapArea.classList.remove("is-press");
+});
+
+function renderCounter(n){
+  counterEl.textContent = String(n).padStart(4, "0");
 }
