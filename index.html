@@ -13,9 +13,9 @@
   <main class="app" id="app">
     <h1 class="title">Tether Tap</h1>
 
-    <!-- Зона тапа -->
-    <button class="tap-area" id="tapArea" aria-label="Tap USDT">
-      <div class="marble-plate">
+    <!-- Зона тапа (без кнопки, чтобы iOS не выделял и не ломал клики) -->
+    <div class="tap-area" id="tapArea" role="button" aria-label="Tap USDT" tabindex="0">
+      <div class="coin-stage">
         <img
           id="coinImg"
           class="coin"
@@ -24,7 +24,7 @@
           draggable="false"
         />
 
-        <!-- Трещины (рисуем CSS-линиями, без картинок) -->
+        <!-- Трещины -->
         <div class="cracks" id="cracks">
           <span class="crack c1"></span>
           <span class="crack c2"></span>
@@ -32,7 +32,7 @@
           <span class="crack c4"></span>
         </div>
 
-        <!-- Эффект "раскол" -->
+        <!-- “Осколки” -->
         <div class="shatter" id="shatter">
           <span class="shard s1"></span>
           <span class="shard s2"></span>
@@ -40,7 +40,7 @@
           <span class="shard s4"></span>
         </div>
       </div>
-    </button>
+    </div>
 
     <!-- Табло -->
     <div class="counter-wrap">
