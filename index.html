@@ -1,54 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Tether Tap</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tether Clicker</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Скрипт Телеграма для работы вибрации и кнопок -->
+    <script src="https://telegram.org"></script>
 </head>
-
 <body>
-  <main class="app" id="app">
-    <h1 class="title">Tether Tap</h1>
-
-    <!-- Зона тапа (без кнопки, чтобы iOS не выделял и не ломал клики) -->
-    <div class="tap-area" id="tapArea" role="button" aria-label="Tap USDT" tabindex="0">
-      <div class="coin-stage">
-        <img
-          id="coinImg"
-          class="coin"
-          src="992437D4-0702-498F-9094-DB45594481F4.png"
-          alt="USDT"
-          draggable="false"
-        />
-
-        <!-- Трещины -->
-        <div class="cracks" id="cracks">
-          <span class="crack c1"></span>
-          <span class="crack c2"></span>
-          <span class="crack c3"></span>
-          <span class="crack c4"></span>
-        </div>
-
-        <!-- “Осколки” -->
-        <div class="shatter" id="shatter">
-          <span class="shard s1"></span>
-          <span class="shard s2"></span>
-          <span class="shard s3"></span>
-          <span class="shard s4"></span>
-        </div>
-      </div>
+    <!-- Задний фон с кодом -->
+    <div class="crypto-bg">
+        <div class="code-overlay" id="codeOverlay"></div>
     </div>
 
-    <!-- Табло -->
-    <div class="counter-wrap">
-      <div class="counter" id="counter">0000</div>
-      <div class="reward" id="reward">+50 USDT</div>
-    </div>
-  </main>
+    <div class="app">
+        <div class="counter-section">
+            <h1 id="score">0</h1>
+            <p>USDT COLLECTED</p>
+        </div>
 
-  <script src="script.js"></script>
+        <div class="click-section">
+            <button id="tapBtn" class="tether-button"></button>
+        </div>
+    </div>
+
+    <!-- Звук клика (можно заменить ссылку на свой .mp3) -->
+    <audio id="clickSound" src="https://www.soundjay.com" preload="auto"></audio>
+
+    <script src="script.js"></script>
 </body>
 </html>
